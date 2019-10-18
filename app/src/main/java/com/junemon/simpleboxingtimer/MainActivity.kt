@@ -16,26 +16,39 @@ class MainActivity : AppCompatActivity() {
     private val listRestTime by lazy { resources.getStringArray(R.array.rest_time) }
     private val listRoundTime by lazy { resources.getStringArray(R.array.round_time) }
     private val listWhichRound by lazy { resources.getStringArray(R.array.which_round) }
-    private var restTimes: Int? = null
-    private var roundTimes: Int? = null
-    private var whichRounds: Int? = null
+
     private var warningValue: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         val binding: ActivityMainBinding =
             DataBindingUtil.setContentView(this, R.layout.activity_main)
-        initData()
         binding.apply {
             lifecycleOwner = this@MainActivity
+            initData(this)
             initView(this)
         }
     }
 
-    private fun initData() {
-        vm.getNumberPickerData().observe(this@MainActivity, Observer {
-            restTimes = it.first
-            roundTimes = it.second
-            whichRounds = it.third
+    private fun initData(binding: ActivityMainBinding) {
+        vm.getNumberPickerData().observe(this@MainActivity, Observer { data ->
+            binding.apply {
+                btnStart.setOnClickListener {
+                    when (data.second) {
+                        0 -> vm.startTimer(setCustomSeconds(30))
+                        1 -> vm.startTimer(setCustomMinutes(1))
+                        2 -> vm.startTimer(setCustomMinutes(2))
+                        3 -> vm.startTimer(setCustomMinutes(3))
+                        4 -> vm.startTimer(setCustomMinutes(4))
+                        5 -> vm.startTimer(setCustomMinutes(5))
+                        6 -> vm.startTimer(setCustomMinutes(6))
+                        7 -> vm.startTimer(setCustomMinutes(7))
+                        8 -> vm.startTimer(setCustomMinutes(8))
+                        9 -> vm.startTimer(setCustomMinutes(9))
+                        10 -> vm.startTimer(setCustomMinutes(10))
+                        else -> vm.startTimer(setCustomSeconds(30))
+                    }
+                }
+            }
         })
 
         vm.warningValue.observe(this@MainActivity, Observer {
@@ -48,27 +61,8 @@ class MainActivity : AppCompatActivity() {
             initNumberPicker(this)
             initRadioButton(this)
             initTimer(this)
-            btnStart.setOnClickListener {
-                when {
-                    restTimes == null -> vm.setRestTime(0)
-                    roundTimes == null -> vm.setRoundTime(0)
-                    whichRounds == null -> vm.setWhichRound(0)
-                    warningValue == null -> vm.setWarningValue(0)
-                }
-                when (roundTimes) {
-                    0 -> vm.startTimer(setCustomSeconds(5))
-                    1 -> vm.startTimer(setCustomMinutes(1))
-                    2 -> vm.startTimer(setCustomMinutes(2))
-                    3 -> vm.startTimer(setCustomMinutes(3))
-                    4 -> vm.startTimer(setCustomMinutes(4))
-                    5 -> vm.startTimer(setCustomMinutes(5))
-                    6 -> vm.startTimer(setCustomMinutes(6))
-                    7 -> vm.startTimer(setCustomMinutes(7))
-                    8 -> vm.startTimer(setCustomMinutes(8))
-                    9 -> vm.startTimer(setCustomMinutes(9))
-                    10 -> vm.startTimer(setCustomMinutes(10))
-                }
-            }
+
+
         }
     }
 
@@ -93,6 +87,7 @@ class MainActivity : AppCompatActivity() {
                 minValue = 0
                 maxValue = listRestTime.size - 1
                 displayedValues = listRestTime
+                vm.setRestTime(value)
                 setOnValueChangedListener { _, _, newVal ->
                     vm.setRestTime(newVal)
                 }
@@ -102,6 +97,7 @@ class MainActivity : AppCompatActivity() {
                 minValue = 0
                 maxValue = listRoundTime.size - 1
                 displayedValues = listRoundTime
+                vm.setRoundTime(value)
                 setOnValueChangedListener { _, _, newVal ->
                     vm.setRoundTime(newVal)
                 }
@@ -110,6 +106,7 @@ class MainActivity : AppCompatActivity() {
                 minValue = 0
                 maxValue = listWhichRound.size - 1
                 displayedValues = listWhichRound
+                vm.setWhichRound(value)
                 setOnValueChangedListener { _, _, newVal ->
                     vm.setWhichRound(newVal)
                 }
