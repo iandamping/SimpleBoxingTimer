@@ -1,11 +1,15 @@
 package com.junemon.simpleboxingtimer
 
+import android.content.Context
+import android.media.MediaPlayer
 import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import com.ian.app.helper.model.GenericViewModelZipperTriple
 import com.junemon.simpleboxingtimer.TimerConstant.DONE
 import com.junemon.simpleboxingtimer.TimerConstant.ONE_SECOND
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 
 /**
@@ -15,7 +19,7 @@ import com.junemon.simpleboxingtimer.TimerConstant.ONE_SECOND
  */
 class MainViewmodel : BaseViewModel() {
     private lateinit var timer: CountDownTimer
-    private val _restTimeValue: MutableLiveData<Int> = MutableLiveData()
+    private val _restTimeValue: MutableLiveData<Long> = MutableLiveData()
     private val _roundTimeValue: MutableLiveData<Int> = MutableLiveData()
     private val _whichRoundValue: MutableLiveData<Int> = MutableLiveData()
 
@@ -25,7 +29,8 @@ class MainViewmodel : BaseViewModel() {
     val currentTime: LiveData<Long>
         get() = _currentTime
 
-    private val restTimeValue: LiveData<Int>
+
+    private val restTimeValue: LiveData<Long>
         get() = _restTimeValue
 
     private val roundTimeValue: LiveData<Int>
@@ -42,21 +47,44 @@ class MainViewmodel : BaseViewModel() {
             override fun onFinish() {
                 _currentTime.value = DONE
             }
-
             override fun onTick(millisUntilFinished: Long) {
                 _currentTime.value = (millisUntilFinished / ONE_SECOND)
             }
-
         }
         if (::timer.isInitialized) timer.start()
     }
 
-    fun cancelTimer(){
+
+
+    fun runningDelay(ctx: Context,sequence: Int, firstDurationTime: Long, secondDurationTime:Long,func: () -> Unit, restTime:() ->Unit) {
+        vmScope.launch {
+            var x = 0
+            while (x < sequence) {
+                //round time
+                func.invoke()
+                startBellSound(ctx)
+
+                //rest time
+                delay(firstDurationTime)
+                restTime.invoke()
+                startBellSound(ctx)
+
+                //run loop again
+                delay(secondDurationTime)
+                x++
+            }
+            if (x == sequence){
+                endBellSound(ctx)
+            }
+        }
+    }
+
+    fun cancelTimer() {
         if (::timer.isInitialized) timer.cancel()
     }
 
 
-    fun setRestTime(data: Int) {
+    fun setRestTime(data: Long) {
         _restTimeValue.value = data
     }
 
@@ -72,13 +100,19 @@ class MainViewmodel : BaseViewModel() {
         _warningValue.value = data
     }
 
-    fun getNumberPickerData() = GenericViewModelZipperTriple(
-        restTimeValue,
-        roundTimeValue,
-        whichRoundValue
-    ).getGenericData()
+    fun getNumberPickerData() = GenericViewModelZipperTriple(restTimeValue, roundTimeValue, whichRoundValue).getGenericData()
 
+    private fun startBellSound(ctx:Context){
+        vmScope.launch {
+            MediaPlayer.create(ctx,R.raw.boxing_start).start()
+        }
+    }
 
+    private fun endBellSound(ctx: Context){
+        vmScope.launch {
+            MediaPlayer.create(ctx,R.raw.boxing_end).start()
+        }
+    }
 
     override fun onCleared() {
         super.onCleared()
