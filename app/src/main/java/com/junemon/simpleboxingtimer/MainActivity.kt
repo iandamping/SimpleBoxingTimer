@@ -37,7 +37,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomSeconds(30))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
 
@@ -47,7 +47,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(1))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         2 -> {
@@ -56,7 +56,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(2))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         3 -> {
@@ -65,7 +65,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(3))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         4 -> {
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(4))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         5 -> {
@@ -83,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(5))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         6 -> {
@@ -92,7 +92,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(6))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         7 -> {
@@ -101,7 +101,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(7))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         8 -> {
@@ -110,7 +110,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(8))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         9 -> {
@@ -119,7 +119,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(9))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         10 -> {
@@ -128,7 +128,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomMinutes(10))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                         else -> {
@@ -137,7 +137,7 @@ class MainActivity : AppCompatActivity() {
                                 vm.startTimer(setCustomSeconds(30))
                             }, {
                                 //rest time
-                                vm.startTimer(data.first!!)
+                                vm.startRestTimer(data.first!!)
                             })
                         }
                     }
@@ -163,6 +163,21 @@ class MainActivity : AppCompatActivity() {
     private fun initTimer(binding: ActivityMainBinding) {
         binding.apply {
             vm.currentTime.observe(this@MainActivity, Observer {
+                val value = DateUtils.formatElapsedTime(it)
+                if (warningValue!=null){
+                    if(value == "00:$warningValue"){
+                        vm.warningBellSound(this@MainActivity)
+                    }
+                }
+                timerSet = if (value == "00:00") {
+                    null
+                } else
+                    value
+                invalidateAll()
+                btnStart.setOnClickListener { vm.cancelTimer() }
+            })
+
+            vm.currentRestTime.observe(this@MainActivity, Observer {
                 val value = DateUtils.formatElapsedTime(it)
                 timerSet = if (value == "00:00") {
                     null
@@ -212,7 +227,7 @@ class MainActivity : AppCompatActivity() {
                 minValue = 0
                 maxValue = listWhichRound.size - 1
                 displayedValues = listWhichRound
-                vm.setWhichRound(value)
+                vm.setWhichRound(value + 1)
                 setOnValueChangedListener { _, _, newVal ->
                     vm.setWhichRound(newVal + 1)
                 }
