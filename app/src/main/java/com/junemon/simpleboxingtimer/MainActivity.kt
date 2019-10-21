@@ -5,6 +5,8 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import com.ian.app.helper.util.fullScreenAnimation
+import com.ian.app.helper.util.logE
 import com.junemon.simpleboxingtimer.TimerConstant.setCustomMinutes
 import com.junemon.simpleboxingtimer.TimerConstant.setCustomSeconds
 import com.junemon.simpleboxingtimer.databinding.ActivityMainBinding
@@ -27,123 +29,129 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun initData(binding: ActivityMainBinding) {
-        vm.getNumberPickerData().observe(this@MainActivity, Observer { data ->
-            binding.apply {
-                btnStart.setOnClickListener {
-                    when (data.second) {
-                        0 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomSeconds(30), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomSeconds(30))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
+        binding.apply {
+            vm.roundTimeValue.observe(this@MainActivity, Observer {roundTimeResult ->
 
-                        1 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(1), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(1))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
+                vm.restTimeValue.observe(this@MainActivity, Observer { restTimeResult ->
+
+                    vm.whichRoundValue.observe(this@MainActivity, Observer {roundValueResult ->
+                        btnStart.setOnClickListener {
+                            when (roundTimeResult) {
+                                0 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomSeconds(30), restTimeResult!!, {
+                                        //round time
+                                        vm.startTimer(setCustomSeconds(30))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+
+                                1 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(1), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(1))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                2 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(2), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(2))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                3 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(3), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(3))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                4 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(4), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(4))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                5 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(5), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(5))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                6 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(6), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(6))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                7 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(7), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(7))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                8 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(8), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(8))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                9 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(9), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(9))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                10 -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomMinutes(10), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomMinutes(10))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                                else -> {
+                                    vm.runningDelay(this@MainActivity,roundValueResult, setCustomSeconds(30), restTimeResult, {
+                                        //round time
+                                        vm.startTimer(setCustomSeconds(30))
+                                    }, {
+                                        //rest time
+                                        vm.startRestTimer(restTimeResult)
+                                    })
+                                }
+                            }
                         }
-                        2 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(2), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(2))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        3 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(3), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(3))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        4 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(4), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(4))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        5 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(5), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(5))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        6 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(6), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(6))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        7 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(7), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(7))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        8 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(8), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(8))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        9 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(9), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(9))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        10 -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomMinutes(10), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomMinutes(10))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                        else -> {
-                            vm.runningDelay(this@MainActivity,data.third!!, setCustomSeconds(30), data.first!!, {
-                                //round time
-                                vm.startTimer(setCustomSeconds(30))
-                            }, {
-                                //rest time
-                                vm.startRestTimer(data.first!!)
-                            })
-                        }
-                    }
-                }
-            }
-        })
+                    })
+                })
+            })
+        }
 
         vm.warningValue.observe(this@MainActivity, Observer {
             warningValue = it
@@ -155,8 +163,6 @@ class MainActivity : AppCompatActivity() {
             initNumberPicker(this)
             initRadioButton(this)
             initTimer(this)
-
-
         }
     }
 
@@ -169,20 +175,32 @@ class MainActivity : AppCompatActivity() {
                         vm.warningBellSound(this@MainActivity)
                     }
                 }
-                timerSet = if (value == "00:00") {
+                timerSet = value
+               /* timerSet = if (value == "00:00") {
                     null
                 } else
                     value
-                invalidateAll()
+                invalidateAll()*/
                 btnStart.setOnClickListener { vm.cancelTimer() }
             })
 
             vm.currentRestTime.observe(this@MainActivity, Observer {
                 val value = DateUtils.formatElapsedTime(it)
-                timerSet = if (value == "00:00") {
-                    null
-                } else
-                    value
+                when {
+                    value== "00:00" -> {
+                        timerSet = null
+                        isRest = false
+                    }
+                    value!= "00:00" -> {
+                        isRest = true
+                        timerSet = value
+                    }
+                    else -> {
+                        timerSet = null
+                        isRest = false
+                    }
+                }
+
                 invalidateAll()
                 btnStart.setOnClickListener { vm.cancelTimer() }
             })

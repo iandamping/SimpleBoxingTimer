@@ -35,13 +35,13 @@ class MainViewmodel : BaseViewModel() {
         get() = _currentRestTime
 
 
-    private val restTimeValue: LiveData<Long>
+     val restTimeValue: LiveData<Long>
         get() = _restTimeValue
 
-    private val roundTimeValue: LiveData<Int>
+    val roundTimeValue: LiveData<Int>
         get() = _roundTimeValue
 
-    private val whichRoundValue: LiveData<Int>
+     val whichRoundValue: LiveData<Int>
         get() = _whichRoundValue
 
     val warningValue: LiveData<Int>

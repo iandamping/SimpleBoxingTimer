@@ -6,6 +6,9 @@
     <data>
         <import type="android.view.View"/>
         <variable
+            name="isRest"
+            type="Boolean" />
+        <variable
             name="timerSet"
             type="String" />
     </data>
@@ -18,9 +21,9 @@
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="300dp"
             android:layout_margin="8dp"
-            android:background="@drawable/bg_numberpicker_dialog"
+            app:handleBackgroundHelper="@{isRest}"
             android:orientation="horizontal"
             android:padding="16dp">
 
@@ -29,7 +32,10 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="100sp"
+                android:fontFamily="@font/calculator"
+                android:textStyle="bold"
                 android:text="@{timerSet}"
+                android:layout_gravity="center"
                 android:gravity="center"
                 tools:text="0:00"/>
 
