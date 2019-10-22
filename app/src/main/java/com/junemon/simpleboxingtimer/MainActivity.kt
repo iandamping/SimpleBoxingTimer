@@ -5,6 +5,9 @@ import android.os.Bundle
 import android.text.format.DateUtils
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.MobileAds
+import com.ian.app.helper.util.checkConnectivityStatus
 import com.ian.app.helper.util.fullScreenAnimation
 import com.ian.app.helper.util.logE
 import com.ian.app.helper.util.startActivity
@@ -28,6 +31,7 @@ class MainActivity : AppCompatActivity() {
             lifecycleOwner = this@MainActivity
             initData(this)
             initView(this)
+            inflateAdsView(this)
         }
     }
 
@@ -179,8 +183,6 @@ class MainActivity : AppCompatActivity() {
         binding.apply {
             vm.isTimerRunning.observe(this@MainActivity, Observer {isRunning ->
                 disableView(isRunning)
-                isRunningTimer = isRunning
-
                     vm.currentTime.observe(this@MainActivity, Observer { timeTicking ->
                         val value = DateUtils.formatElapsedTime(timeTicking)
                         if (warningValue != null) {
@@ -278,4 +280,17 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun inflateAdsView(binding:ActivityMainBinding){
+        binding.apply {
+            this@MainActivity.checkConnectivityStatus {
+                if(it){
+                    MobileAds.initialize(this@MainActivity) {}
+                    val request = AdRequest.Builder().build()
+                    detailAdView.loadAd(request)
+                }
+            }
+
+        }
+
+    }
 }

@@ -1,6 +1,7 @@
 <resources>
     <string name="app_name">SimpleBoxingTimer</string>
-
+    <string name="admobAppID">ca-app-pub-5657961827660648~9449682672</string>
+    <string name="admobUnitID">ca-app-pub-5657961827660648/3758372293</string>
     <string-array name="rest_time">
         <item>0 sec</item>
         <item>15 sec</item>

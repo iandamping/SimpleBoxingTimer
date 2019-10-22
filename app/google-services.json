@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "524103306151",
+    "firebase_url": "https://simpleboxingtimer.firebaseio.com",
+    "project_id": "simpleboxingtimer",
+    "storage_bucket": "simpleboxingtimer.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:524103306151:android:1ce3fa7650fcbe26c5c482",
+        "android_client_info": {
+          "package_name": "com.junemon.simpleboxingtimer"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "524103306151-59dluj2ub83hg1eugntof2k1kas2icjt.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.junemon.simpleboxingtimer",
+            "certificate_hash": "1c952623c1f9e05a2b85d6b5763d844238db5dab"
+          }
+        },
+        {
+          "client_id": "524103306151-cd9fvqof7ojadqcvatuqj9f28v5ri4j6.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAnNqwdXgbjbItHHnhBzQv0GcS61uvhHw4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "524103306151-cd9fvqof7ojadqcvatuqj9f28v5ri4j6.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -155,7 +155,7 @@ class MainViewmodel : BaseViewModel() {
 
     fun warningBellSound(ctx: Context) {
         vmScope.launch {
-            MediaPlayer.create(ctx, R.raw.boxing_warning).start()
+            MediaPlayer.create(ctx, R.raw.warning_sound).start()
         }
     }
 
