@@ -31,13 +31,13 @@
                 app:bindingTimerHelper="@{timerSet}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="100sp"
+                android:textSize="165sp"
                 android:fontFamily="@font/calculator"
                 android:textStyle="bold"
                 android:text="@{timerSet}"
                 android:layout_gravity="center"
                 android:gravity="center"
-                tools:text="0:00"/>
+                tools:text="10:00"/>
 
             <LinearLayout
                 android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}"
