@@ -6,6 +6,9 @@
     <data>
         <import type="android.view.View"/>
         <variable
+            name="isRunningTimer"
+            type="Boolean" />
+        <variable
             name="isRest"
             type="Boolean" />
         <variable
@@ -137,6 +140,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="OFF"
+                    android:checked="true"
                     android:textColor="@android:color/white" />
 
                 <RadioButton
@@ -156,30 +160,13 @@
             </RadioGroup>
         </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="match_parent"
+        <Button
+            android:id="@+id/btnReset"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:orientation="horizontal">
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:fontFamily="@font/lato"
-                android:text="VIBRATE"
-                android:textColor="@android:color/white" />
-
-            <Switch
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="32dp" />
-
-            <Button
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="42dp"
-                android:text="Reset" />
-        </LinearLayout>
+            android:layout_gravity="center"
+            android:gravity="center"
+            android:text="Reset" />
 
         <Button
             android:id="@+id/btnStart"
