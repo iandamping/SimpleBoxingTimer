@@ -40,8 +40,10 @@ class MainActivity : AppCompatActivity() {
             vm.roundTimeValue.observe(this@MainActivity, Observer { roundTimeResult ->
                 vm.restTimeValue.observe(this@MainActivity, Observer { restTimeResult ->
                     vm.whichRoundValue.observe(this@MainActivity, Observer { roundValueResult ->
-//                        roundTimeResults = roundTimeResult
-//                        roundValueResults = roundValueResult
+                        vm.currentRound.observe(this@MainActivity, Observer { currentRounds ->
+                            currentRound = "Round $currentRounds / $roundValueResult"
+                            invalidateAll()
+                        })
                         btnStart.setOnClickListener {
                             when (roundTimeResult) {
                                 0 -> {
@@ -173,7 +175,7 @@ class MainActivity : AppCompatActivity() {
             initTimer(this)
 
             btnReset.setOnClickListener {
-            startActivity<MainActivity>()
+                startActivity<MainActivity>()
                 finish()
             }
         }
@@ -181,37 +183,37 @@ class MainActivity : AppCompatActivity() {
 
     private fun initTimer(binding: ActivityMainBinding) {
         binding.apply {
-            vm.isTimerRunning.observe(this@MainActivity, Observer {isRunning ->
+            vm.isTimerRunning.observe(this@MainActivity, Observer { isRunning ->
                 disableView(isRunning)
-                    vm.currentTime.observe(this@MainActivity, Observer { timeTicking ->
-                        val value = DateUtils.formatElapsedTime(timeTicking)
-                        if (warningValue != null) {
-                            if (value == "00:$warningValue") {
-                                vm.warningBellSound(this@MainActivity)
-                            }
+                vm.currentTime.observe(this@MainActivity, Observer { timeTicking ->
+                    val value = DateUtils.formatElapsedTime(timeTicking)
+                    if (warningValue != null) {
+                        if (value == "00:$warningValue") {
+                            vm.warningBellSound(this@MainActivity)
                         }
-                        timerSet = value
-                        invalidateAll()
-                    })
+                    }
+                    timerSet = value
+                    invalidateAll()
+                })
 
-                    vm.currentRestTime.observe(this@MainActivity, Observer {restTimeTicking ->
-                        val value = DateUtils.formatElapsedTime(restTimeTicking)
-                        when {
-                            value == "00:00" -> {
-                                timerSet = null
-                                isRest = false
-                            }
-                            value != "00:00" -> {
-                                isRest = true
-                                timerSet = value
-                            }
-                            else -> {
-                                timerSet = null
-                                isRest = false
-                            }
+                vm.currentRestTime.observe(this@MainActivity, Observer { restTimeTicking ->
+                    val value = DateUtils.formatElapsedTime(restTimeTicking)
+                    when {
+                        value == "00:00" -> {
+                            timerSet = null
+                            isRest = false
                         }
-                        invalidateAll()
-                    })
+                        value != "00:00" -> {
+                            isRest = true
+                            timerSet = value
+                        }
+                        else -> {
+                            timerSet = null
+                            isRest = false
+                        }
+                    }
+                    invalidateAll()
+                })
             })
         }
     }
@@ -280,10 +282,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun inflateAdsView(binding:ActivityMainBinding){
+    private fun inflateAdsView(binding: ActivityMainBinding) {
         binding.apply {
             this@MainActivity.checkConnectivityStatus {
-                if(it){
+                if (it) {
                     MobileAds.initialize(this@MainActivity) {}
                     val request = AdRequest.Builder().build()
                     detailAdView.loadAd(request)

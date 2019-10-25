@@ -34,6 +34,11 @@ class MainViewmodel : BaseViewModel() {
     private val _roundTimeValue: MutableLiveData<Int> = MutableLiveData()
     private val _whichRoundValue: MutableLiveData<Int> = MutableLiveData()
     private val _warningValue: MutableLiveData<Int> = MutableLiveData()
+    private val _currentRound:MutableLiveData<Int> = MutableLiveData()
+
+    val currentRound:LiveData<Int>
+    get() = _currentRound
+
     val warningValue: LiveData<Int>
         get() = _warningValue
 
@@ -91,6 +96,7 @@ class MainViewmodel : BaseViewModel() {
         vmScope.launch {
             var x = 0
             while (x < sequence) {
+                _currentRound.value = x + 1
                 //round time
                 func.invoke()
                 startBellSound(ctx)
@@ -107,6 +113,7 @@ class MainViewmodel : BaseViewModel() {
                 endBellSound(ctx)
                 setTimmerIsRunning(false)
             }
+
         }
     }
 

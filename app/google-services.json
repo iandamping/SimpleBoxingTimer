@@ -15,11 +15,11 @@
       },
       "oauth_client": [
         {
-          "client_id": "524103306151-59dluj2ub83hg1eugntof2k1kas2icjt.apps.googleusercontent.com",
+          "client_id": "524103306151-u1rcf1om5letpgvkn9e177jkddab1i52.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
             "package_name": "com.junemon.simpleboxingtimer",
-            "certificate_hash": "1c952623c1f9e05a2b85d6b5763d844238db5dab"
+            "certificate_hash": "126fe9c458beda3591b618803c7e1917d022f4fb"
           }
         },
         {
