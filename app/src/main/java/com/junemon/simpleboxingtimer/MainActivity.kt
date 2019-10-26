@@ -3,22 +3,25 @@ package com.junemon.simpleboxingtimer
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.format.DateUtils
+import android.view.WindowManager
 import androidx.databinding.DataBindingUtil
 import androidx.lifecycle.Observer
+import com.google.android.gms.ads.AdListener
 import com.google.android.gms.ads.AdRequest
+import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.ian.app.helper.util.checkConnectivityStatus
-import com.ian.app.helper.util.fullScreenAnimation
+import com.ian.app.helper.util.logD
 import com.ian.app.helper.util.logE
 import com.ian.app.helper.util.startActivity
-import com.junemon.simpleboxingtimer.TimerConstant.ONE_SECOND
 import com.junemon.simpleboxingtimer.TimerConstant.setCustomMinutes
 import com.junemon.simpleboxingtimer.TimerConstant.setCustomSeconds
 import com.junemon.simpleboxingtimer.databinding.ActivityMainBinding
-import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.viewmodel.ext.android.viewModel
 
+
 class MainActivity : AppCompatActivity() {
+    private lateinit var mInterstitialAd: InterstitialAd
     private val vm: MainViewmodel by viewModel()
     private val listRestTime by lazy { resources.getStringArray(R.array.rest_time) }
     private val listRoundTime by lazy { resources.getStringArray(R.array.round_time) }
@@ -26,12 +29,14 @@ class MainActivity : AppCompatActivity() {
     private var warningValue: Int? = null
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
         binding.apply {
             lifecycleOwner = this@MainActivity
             initData(this)
             initView(this)
             inflateAdsView(this)
+            inflateInterstitialAdsView(this)
         }
     }
 
@@ -156,6 +161,15 @@ class MainActivity : AppCompatActivity() {
                                 }
                             }
 
+                            mInterstitialAd.adListener = object : AdListener() {
+                                override fun onAdLoaded() {
+                                    mInterstitialAd.show()
+                                }
+
+                                override fun onAdFailedToLoad(errorCode: Int) {
+                                    if (BuildConfig.DEBUG) logE("ërror happen when load ads")
+                                }
+                            }
                         }
                     })
                 })
@@ -295,4 +309,19 @@ class MainActivity : AppCompatActivity() {
         }
 
     }
+
+    private fun inflateInterstitialAdsView(binding: ActivityMainBinding) {
+        binding.apply {
+            this@MainActivity.checkConnectivityStatus {
+                if (it) {
+                    mInterstitialAd = InterstitialAd(this@MainActivity)
+                    mInterstitialAd.apply {
+                        adUnitId = getString(R.string.interstitialAdmobUnitID)
+                        loadAd(AdRequest.Builder().build())
+                    }
+                }
+            }
+        }
+    }
 }
+

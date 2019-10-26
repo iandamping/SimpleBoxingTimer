@@ -1,8 +1,11 @@
 <resources>
     <string name="app_name">SimpleBoxingTimer</string>
     <string name="admobAppID">ca-app-pub-5657961827660648~9449682672</string>
-    <string name="admobUnitID">ca-app-pub-5657961827660648/3758372293</string>
-    <string name="admobID_banner_test">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="bannerAdmobUnitID">ca-app-pub-5657961827660648/3758372293</string>
+    <string name="interstitialAdmobUnitID">ca-app-pub-5657961827660648/3432468034</string>
+    <string name="bannerAdmobUnitIDTestAd">ca-app-pub-3940256099942544/6300978111</string>
+    <string name="interstitialAdmobUnitIDTestAd">ca-app-pub-3940256099942544/1033173712</string>
+    <string name="mobileTestDeviceId">C340C54945DE79A1BC801918665E1C66</string>
     <string-array name="rest_time">
         <item>0 sec</item>
         <item>15 sec</item>

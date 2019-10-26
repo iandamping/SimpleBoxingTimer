@@ -4,62 +4,69 @@
     xmlns:tools="http://schemas.android.com/tools">
 
     <data>
-        <import type="android.view.View"/>
+
+        <import type="android.view.View" />
+
         <variable
             name="isRest"
             type="Boolean" />
+
         <variable
             name="timerSet"
             type="String" />
+
         <variable
             name="currentRound"
             type="String" />
 
     </data>
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:keepScreenOn="true"
         android:background="@drawable/bg_black"
         android:orientation="vertical"
         tools:context=".MainActivity">
 
         <TextView
-            android:layout_margin="16dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:textColor="@color/white"
-            android:visibility="@{currentRound != null ? View.VISIBLE : View.GONE}"
+            android:layout_margin="16dp"
             android:text="@{currentRound}"
-            tools:text="Round 1 / 2"/>
+            android:textColor="@color/white"
+            android:textSize="22sp"
+            android:visibility="@{currentRound != null ? View.VISIBLE : View.GONE}"
+            tools:text="Round 1 / 2" />
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="300dp"
             android:layout_margin="8dp"
-            app:handleBackgroundHelper="@{isRest}"
             android:orientation="horizontal"
-            android:padding="16dp">
+            android:padding="16dp"
+            app:handleBackgroundHelper="@{isRest}">
 
             <TextView
-                app:bindingTimerHelper="@{timerSet}"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="165sp"
-                android:fontFamily="@font/calculator"
-                android:textStyle="bold"
-                android:text="@{timerSet}"
                 android:layout_gravity="center"
+                android:fontFamily="@font/calculator"
                 android:gravity="center"
-                tools:text="10:00"/>
+                android:text="@{timerSet}"
+                android:textSize="165sp"
+                android:textStyle="bold"
+                app:bindingTimerHelper="@{timerSet}"
+                tools:text="10:00" />
 
             <LinearLayout
-                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -77,12 +84,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -100,12 +107,12 @@
             </LinearLayout>
 
             <LinearLayout
-                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -150,8 +157,8 @@
                     android:id="@+id/radioOff"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="OFF"
                     android:checked="true"
+                    android:text="OFF"
                     android:textColor="@android:color/white" />
 
                 <RadioButton
@@ -181,21 +188,19 @@
 
         <Button
             android:id="@+id/btnStart"
-            android:layout_gravity="center"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
-            android:text="START"/>
+            android:layout_gravity="center"
+            android:text="START" />
 
         <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/detailAdView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             ads:adSize="SMART_BANNER"
-            ads:adUnitId="@string/admobID_banner_test">
+            ads:adUnitId="@string/bannerAdmobUnitIDTestAd" />
 
-            <!--ads:adSize="BANNER"-->
-            <!--ads:adUnitId="@string/admobID_banner_test">-->
-
-        </com.google.android.gms.ads.AdView>
+        <!--ads:adSize="BANNER"-->
+        <!--ads:adUnitId="@string/admobID_banner_test">-->
     </LinearLayout>
 </layout>
