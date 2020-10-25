@@ -26,12 +26,9 @@ class MainViewmodel(private val context:Context) : BaseViewModel() {
     private val _roundTimeValue: MutableStateFlow<Int> = MutableStateFlow(0)
     private val _whichRoundValue: MutableStateFlow<Int> = MutableStateFlow(0)
     private val _warningValue: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val _currentRound: MutableStateFlow<Int> = MutableStateFlow(0)
     private val _currentTime: MutableStateFlow<Long?> = MutableStateFlow(null)
     private val _currentRestTime: MutableStateFlow<Long?> = MutableStateFlow(null)
 
-    val currentRound: StateFlow<Int>
-        get() = _currentRound
 
     val warningValue: StateFlow<Int>
         get() = _warningValue
@@ -102,10 +99,6 @@ class MainViewmodel(private val context:Context) : BaseViewModel() {
         _whichRoundValue.value = data
     }
 
-    fun setCurrentRound(data:Int){
-        _currentRound.value = data
-    }
-
     fun setWarningValue(data: Int) {
         _warningValue.value = data
     }
@@ -114,13 +107,13 @@ class MainViewmodel(private val context:Context) : BaseViewModel() {
         _isTimerRunning.value = data
     }
 
-    private fun startBellSound() {
+    fun startBellSound() {
         vmScope.launch {
             MediaPlayer.create(context, R.raw.boxing_start).start()
         }
     }
 
-    private fun endBellSound() {
+    fun endBellSound() {
         vmScope.launch {
             MediaPlayer.create(context, R.raw.boxing_end).start()
         }

@@ -2,7 +2,6 @@ package com.junemon.simpleboxingtimer
 
 import android.os.Bundle
 import android.text.format.DateUtils
-import android.util.Log
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
@@ -45,8 +44,9 @@ class MainActivity : AppCompatActivity() {
         observeRoundTimeValue()
         observeRestTimeValue()
         observeWhichRoundValue()
-        observeCurrentRound()
         observeWarningValue()
+        observeTimer()
+        observeRestTimer()
     }
 
     private fun observeIsTimmerRunning() {
@@ -90,98 +90,6 @@ class MainActivity : AppCompatActivity() {
         lifecycleScope.launchWhenStarted {
             vm.whichRoundValue.collect { roundValueResult ->
                 howMuchRoundValue = roundValueResult
-                Log.e("counter", "current value : $howMuchRoundValue")
-/*
-                    Log.e("counter", "current value : $howMuchRoundValue")
-                    Log.e("counter", "current value : $roundTimeController")
-
-                    if (restTimeValue.equals(0)) {
-                        when {
-                            howMuchRoundCounter < howMuchRoundValue -> {
-                                vm.startTimer(restTimeValue) {
-                                    howMuchRoundCounter++
-                                    vm.setWhichRound(roundTimeController)
-                                    Log.e("counter", "done running")
-                                }
-                            }
-                            else -> {
-                                howMuchRoundCounter = 0
-                                roundTimeController = 0
-                                with(binding) {
-                                    timerSet = null
-                                    isRest = false
-                                }
-                            }
-                        }
-                    } else {
-                        when {
-                            howMuchRoundCounter < howMuchRoundValue -> {
-                                vm.startRestTimer(restTimeValue) {
-                                    howMuchRoundCounter++
-                                    vm.setWhichRound(roundTimeController)
-                                    Log.e("counter", "done running")
-                                }
-                            }
-                            else -> {
-                                howMuchRoundCounter = 0
-                                roundTimeController = 0
-                                with(binding) {
-                                    timerSet = null
-                                    isRest = false
-                                }
-                            }
-                        }
-                    }*/
-
-                /*vm.startTimer(roundTimeValue) {
-                    howMuchRoundCounter++
-                    vm.setWhichRound(roundTimeController)
-
-                    if (restTimeValue.equals(0)) {
-                        when{
-                            howMuchRoundCounter < howMuchRoundValue ->{
-                                vm.startTimer(restTimeValue) {
-                                    vm.setWhichRound(roundTimeController)
-                                    Log.e("counter","done running")
-                                }
-                            }
-                            else ->{
-                                howMuchRoundCounter = 0
-                                roundTimeController = 0
-                                with(binding){
-                                    timerSet = null
-                                    isRest = false
-                                }
-                            }
-                        }
-
-                    } else {
-                        when{
-                            howMuchRoundCounter < howMuchRoundValue ->{
-                                vm.startRestTimer(restTimeValue) {
-                                    vm.setWhichRound(roundTimeController)
-                                    Log.e("counter","done running")
-                                }
-                            }
-                            else ->{
-                                howMuchRoundCounter = 0
-                                roundTimeController = 0
-                                with(binding){
-                                    timerSet = null
-                                    isRest = false
-                                }
-                            }
-                        }
-                    }
-                }*/
-            }
-        }
-    }
-
-    private fun observeCurrentRound() {
-        lifecycleScope.launchWhenStarted {
-            vm.currentRound.collect { currentRounds ->
-                binding.currentRound = "Round $currentRounds / $howMuchRoundValue"
             }
         }
     }
@@ -195,9 +103,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun ActivityMainBinding.initView() {
+        currentRound = "Round 0 / 0"
         initNumberPicker()
         initRadioButton()
-        initTimer()
 
         btnReset.setOnClickListener {
             startActivity<MainActivity>()
@@ -210,42 +118,45 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startTimer() {
+        if (howMuchRoundCounter==0){
+            binding.currentRound = "Round 0 / $howMuchRoundValue"
+        }
+
+
+        vm.startBellSound()
+
         vm.startTimer(roundTimeValue) {
+            vm.endBellSound()
             howMuchRoundCounter++
-            if (restTimeValue.equals(0)) {
-                when {
-                    howMuchRoundCounter < howMuchRoundValue -> {
+            binding.currentRound = "Round $howMuchRoundCounter / $howMuchRoundValue"
+
+            when {
+                howMuchRoundCounter < howMuchRoundValue -> {
+                    if (restTimeValue.equals(0)) {
                         startTimer()
-                    }
-                    else -> {
-                        howMuchRoundCounter = 0
-                        with(binding) {
-                            timerSet = null
-                            isRest = false
-                        }
+                    } else {
+                        startRestTimer()
                     }
                 }
-            } else {
-                when {
-                    howMuchRoundCounter < howMuchRoundValue -> {
-                        vm.startRestTimer(restTimeValue) {
-                            startTimer()
-                        }
-                    }
-                    else -> {
-                        howMuchRoundCounter = 0
-                        with(binding) {
-                            timerSet = null
-                            isRest = false
-                        }
+                else -> {
+                    howMuchRoundCounter = 0
+                    with(binding) {
+                        currentRound = "Round 0 / 0"
+                        timerSet = null
+                        isRest = false
                     }
                 }
             }
         }
-
     }
 
-    private fun ActivityMainBinding.initTimer() {
+    private fun startRestTimer() {
+        vm.startRestTimer(restTimeValue) {
+            startTimer()
+        }
+    }
+
+    private fun observeTimer() {
         lifecycleScope.launchWhenStarted {
             vm.currentTime.collect { timeTicking ->
                 timeTicking?.let {
@@ -255,24 +166,31 @@ class MainActivity : AppCompatActivity() {
                             vm.warningBellSound()
                         }
                     }
-                    isRest = false
-                    timerSet = value
+                    with(binding) {
+                        isRest = false
+                        timerSet = value
+                    }
+
                 }
             }
+        }
+    }
 
+    private fun observeRestTimer() {
+        lifecycleScope.launchWhenStarted {
             vm.currentRestTime.collect { restTimeTicking ->
-                Log.e("timer", "timer ticking : $restTimeTicking")
                 restTimeTicking?.let {
                     val value = DateUtils.formatElapsedTime(it)
                     when {
                         value != "00:00" -> {
-                            isRest = true
-                            timerSet = value
+                            with(binding) {
+                                isRest = true
+                                timerSet = value
+                            }
                         }
                     }
                 }
             }
-
         }
     }
 
@@ -334,9 +252,6 @@ class MainActivity : AppCompatActivity() {
                 R.id.radioThirtySec -> vm.setWarningValue(30)
             }
         }
-    }
-
-    private fun timerCounter() {
     }
 }
 
