@@ -1,10 +1,9 @@
 package com.junemon.simpleboxingtimer
 
+import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-import com.ian.app.helper.util.gone
-import com.ian.app.helper.util.visible
 
 
 /**
@@ -16,9 +15,9 @@ import com.ian.app.helper.util.visible
 @BindingAdapter("bindingTimerHelper")
 fun setTimerHelper(view:TextView, data:String?){
     if (data!=null){
-        view.visible()
+        view.visibility = View.VISIBLE
     } else if (data == "00:00" || data == null){
-        view.gone()
+        view.visibility = View.GONE
     }
 }
 

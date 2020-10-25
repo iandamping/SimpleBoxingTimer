@@ -1,132 +1,94 @@
 package com.junemon.simpleboxingtimer
 
 import android.content.Context
-import android.content.Context.VIBRATOR_SERVICE
 import android.media.MediaPlayer
-import android.os.Build
 import android.os.CountDownTimer
-import android.os.VibrationEffect
-import android.os.Vibrator
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import com.ian.app.helper.util.logE
 import com.junemon.simpleboxingtimer.TimerConstant.DONE
 import com.junemon.simpleboxingtimer.TimerConstant.ONE_SECOND
-import kotlinx.coroutines.cancel
-import kotlinx.coroutines.channels.Channel
-import kotlinx.coroutines.channels.consume
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.consumeAsFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-
 
 /**
  * Created by Ian Damping on 18,October,2019
  * Github https://github.com/iandamping
  * Indonesia.
  */
-class MainViewmodel : BaseViewModel() {
+class MainViewmodel(private val context:Context) : BaseViewModel() {
     private lateinit var timer: CountDownTimer
     private lateinit var restTimer: CountDownTimer
-    private val _isTimerRunning: MutableLiveData<Boolean> = MutableLiveData()
-    private val _restTimeValue: MutableLiveData<Long> = MutableLiveData()
-    private val _roundTimeValue: MutableLiveData<Int> = MutableLiveData()
-    private val _whichRoundValue: MutableLiveData<Int> = MutableLiveData()
-    private val _warningValue: MutableLiveData<Int> = MutableLiveData()
-    private val _currentRound:MutableLiveData<Int> = MutableLiveData()
 
-    val currentRound:LiveData<Int>
-    get() = _currentRound
+    private val _isTimerRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    private val _restTimeValue: MutableStateFlow<Long> = MutableStateFlow(0)
+    private val _roundTimeValue: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _whichRoundValue: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _warningValue: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _currentRound: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _currentTime: MutableStateFlow<Long?> = MutableStateFlow(null)
+    private val _currentRestTime: MutableStateFlow<Long?> = MutableStateFlow(null)
 
-    val warningValue: LiveData<Int>
+    val currentRound: StateFlow<Int>
+        get() = _currentRound
+
+    val warningValue: StateFlow<Int>
         get() = _warningValue
 
-    private val _currentTime = MutableLiveData<Long>()
-    val currentTime: LiveData<Long>
+    val currentTime: StateFlow<Long?>
         get() = _currentTime
 
-    private val _currentRestTime = MutableLiveData<Long>()
-    val currentRestTime: LiveData<Long>
+    val currentRestTime: StateFlow<Long?>
         get() = _currentRestTime
 
-
-    val isTimerRunning: LiveData<Boolean>
+    val isTimerRunning: MutableStateFlow<Boolean>
         get() = _isTimerRunning
 
-    val restTimeValue: LiveData<Long>
+    val restTimeValue: StateFlow<Long>
         get() = _restTimeValue
 
-    val roundTimeValue: LiveData<Int>
+    val roundTimeValue: StateFlow<Int>
         get() = _roundTimeValue
 
-    val whichRoundValue: LiveData<Int>
+    val whichRoundValue: StateFlow<Int>
         get() = _whichRoundValue
 
-
-    fun startTimer(durationTime: Long) {
+    fun startTimer(durationTime: Long,finishTicking:()->Unit) {
         timer = object : CountDownTimer(durationTime, ONE_SECOND) {
             override fun onFinish() {
                 _currentTime.value = DONE
+                finishTicking.invoke()
             }
 
             override fun onTick(millisUntilFinished: Long) {
                 _currentTime.value = (millisUntilFinished / ONE_SECOND)
             }
         }.start()
-        setTimmerIsRunning(true)
     }
 
-
-    fun startRestTimer(durationTime: Long) {
+    fun startRestTimer(durationTime: Long,finishTicking:()->Unit) {
         restTimer = object : CountDownTimer(durationTime, ONE_SECOND) {
             override fun onFinish() {
                 _currentRestTime.value = DONE
+                finishTicking.invoke()
             }
 
             override fun onTick(millisUntilFinished: Long) {
                 _currentRestTime.value = (millisUntilFinished / ONE_SECOND)
             }
         }.start()
-        setTimmerIsRunning(true)
     }
 
-
-    fun runningDelay(ctx: Context, sequence: Int, firstDurationTime: Long, secondDurationTime: Long, func: () -> Unit, restTime: () -> Unit) {
-        vmScope.launch {
-            var x = 0
-            while (x < sequence) {
-                _currentRound.value = x + 1
-                //round time
-                func.invoke()
-                startBellSound(ctx)
-
-                //rest time
-                delay(firstDurationTime)
-                restTime.invoke()
-
-                //run loop again
-                delay(secondDurationTime)
-                x++
-            }
-            if (x == sequence) {
-                endBellSound(ctx)
-                setTimmerIsRunning(false)
-            }
-
-        }
-    }
 
     private fun cancelAllTimer() {
         if (::timer.isInitialized) {
             timer.cancel()
         }
         if (::restTimer.isInitialized) {
-            restTimer.start()
+            restTimer.cancel()
         }
-        setTimmerIsRunning(false)
     }
-
 
     fun setRestTime(data: Long) {
         _restTimeValue.value = data
@@ -140,6 +102,10 @@ class MainViewmodel : BaseViewModel() {
         _whichRoundValue.value = data
     }
 
+    fun setCurrentRound(data:Int){
+        _currentRound.value = data
+    }
+
     fun setWarningValue(data: Int) {
         _warningValue.value = data
     }
@@ -148,21 +114,21 @@ class MainViewmodel : BaseViewModel() {
         _isTimerRunning.value = data
     }
 
-    private fun startBellSound(ctx: Context) {
+    private fun startBellSound() {
         vmScope.launch {
-            MediaPlayer.create(ctx, R.raw.boxing_start).start()
+            MediaPlayer.create(context, R.raw.boxing_start).start()
         }
     }
 
-    private fun endBellSound(ctx: Context) {
+    private fun endBellSound() {
         vmScope.launch {
-            MediaPlayer.create(ctx, R.raw.boxing_end).start()
+            MediaPlayer.create(context, R.raw.boxing_end).start()
         }
     }
 
-    fun warningBellSound(ctx: Context) {
+    fun warningBellSound() {
         vmScope.launch {
-            MediaPlayer.create(ctx, R.raw.warning_sound).start()
+            MediaPlayer.create(context, R.raw.warning_sound).start()
         }
     }
 
@@ -170,6 +136,4 @@ class MainViewmodel : BaseViewModel() {
         super.onCleared()
         cancelAllTimer()
     }
-
-
 }

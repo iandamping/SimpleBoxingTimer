@@ -1,9 +1,9 @@
 package com.junemon.simpleboxingtimer
 
-import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.android.ext.koin.androidContext
+import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.context.loadKoinModules
 import org.koin.dsl.module
-
 
 /**
  * Created by Ian Damping on 18,October,2019
@@ -14,9 +14,11 @@ import org.koin.dsl.module
 fun injectData() = loadFeature
 
 private val loadFeature by lazy {
-    loadKoinModules(listOf(viewmodelModule))
+    loadKoinModules(activityModule)
 }
 
-private val viewmodelModule = module {
-    viewModel { MainViewmodel() }
+val activityModule = module {
+    scope<MainActivity> {
+        viewModel { MainViewmodel(androidContext()) }
+    }
 }

@@ -1,234 +1,278 @@
 package com.junemon.simpleboxingtimer
 
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.format.DateUtils
+import android.util.Log
 import android.view.WindowManager
-import androidx.databinding.DataBindingUtil
-import androidx.lifecycle.Observer
-import com.google.android.gms.ads.AdListener
-import com.google.android.gms.ads.AdRequest
+import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.InterstitialAd
-import com.google.android.gms.ads.MobileAds
-import com.ian.app.helper.util.checkConnectivityStatus
-import com.ian.app.helper.util.logD
-import com.ian.app.helper.util.logE
-import com.ian.app.helper.util.startActivity
 import com.junemon.simpleboxingtimer.TimerConstant.setCustomMinutes
 import com.junemon.simpleboxingtimer.TimerConstant.setCustomSeconds
 import com.junemon.simpleboxingtimer.databinding.ActivityMainBinding
-import org.koin.android.viewmodel.ext.android.viewModel
-
+import kotlinx.coroutines.flow.collect
+import org.koin.androidx.scope.lifecycleScope as koinLifecycleScope
 
 class MainActivity : AppCompatActivity() {
+    private lateinit var binding: ActivityMainBinding
+
     private lateinit var mInterstitialAd: InterstitialAd
-    private val vm: MainViewmodel by viewModel()
+
+    private val vm: MainViewmodel by koinLifecycleScope.inject()
+
     private val listRestTime by lazy { resources.getStringArray(R.array.rest_time) }
     private val listRoundTime by lazy { resources.getStringArray(R.array.round_time) }
     private val listWhichRound by lazy { resources.getStringArray(R.array.which_round) }
     private var warningValue: Int? = null
+    private var roundTimeValue: Long = 0
+    private var restTimeValue: Long = 0
+    private var howMuchRoundValue: Int = 0
+    private var isTimerRunning = false
+    private var howMuchRoundCounter: Int = 0
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
-        val binding: ActivityMainBinding = DataBindingUtil.setContentView(this, R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+
         binding.apply {
             lifecycleOwner = this@MainActivity
-            initData(this)
-            initView(this)
-            inflateAdsView(this)
-            inflateInterstitialAdsView(this)
-        }
-    }
-
-    private fun initData(binding: ActivityMainBinding) {
-        binding.apply {
-            vm.roundTimeValue.observe(this@MainActivity, Observer { roundTimeResult ->
-                vm.restTimeValue.observe(this@MainActivity, Observer { restTimeResult ->
-                    vm.whichRoundValue.observe(this@MainActivity, Observer { roundValueResult ->
-                        vm.currentRound.observe(this@MainActivity, Observer { currentRounds ->
-                            currentRound = "Round $currentRounds / $roundValueResult"
-                            invalidateAll()
-                        })
-                        btnStart.setOnClickListener {
-                            when (roundTimeResult) {
-                                0 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomSeconds(30), restTimeResult!!, {
-                                        //round time
-                                        vm.startTimer(setCustomSeconds(30))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                1 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(1), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(1))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                2 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(2), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(2))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                3 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(3), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(3))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                4 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(4), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(4))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                5 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(5), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(5))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                6 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(6), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(6))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                7 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(7), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(7))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                8 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(8), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(8))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                9 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(9), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(9))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                10 -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomMinutes(10), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomMinutes(10))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                                else -> {
-                                    vm.runningDelay(this@MainActivity, roundValueResult, setCustomSeconds(30), restTimeResult, {
-                                        //round time
-                                        vm.startTimer(setCustomSeconds(30))
-                                    }, {
-                                        //rest time
-                                        vm.startRestTimer(restTimeResult)
-                                    })
-                                }
-                            }
-
-                            mInterstitialAd.adListener = object : AdListener() {
-                                override fun onAdLoaded() {
-                                    mInterstitialAd.show()
-                                }
-
-                                override fun onAdFailedToLoad(errorCode: Int) {
-                                    if (BuildConfig.DEBUG) logE("ërror happen when load ads")
-                                }
-                            }
-                        }
-                    })
-                })
-            })
-
+            initView()
         }
 
-        vm.warningValue.observe(this@MainActivity, Observer {
-            warningValue = it
-        })
+        observeIsTimmerRunning()
+        observeRoundTimeValue()
+        observeRestTimeValue()
+        observeWhichRoundValue()
+        observeCurrentRound()
+        observeWarningValue()
     }
 
-    private fun initView(binding: ActivityMainBinding) {
-        binding.apply {
-            initNumberPicker(this)
-            initRadioButton(this)
-            initTimer(this)
-
-            btnReset.setOnClickListener {
-                startActivity<MainActivity>()
-                finish()
+    private fun observeIsTimmerRunning() {
+        lifecycleScope.launchWhenStarted {
+            vm.isTimerRunning.collect {
+                isTimerRunning = it
+                binding.disableView(isTimerRunning)
             }
         }
     }
 
-    private fun initTimer(binding: ActivityMainBinding) {
-        binding.apply {
-            vm.isTimerRunning.observe(this@MainActivity, Observer { isRunning ->
-                disableView(isRunning)
-                vm.currentTime.observe(this@MainActivity, Observer { timeTicking ->
-                    val value = DateUtils.formatElapsedTime(timeTicking)
-                    if (warningValue != null) {
-                        if (value == "00:$warningValue") {
-                            vm.warningBellSound(this@MainActivity)
+    private fun observeRestTimeValue() {
+        lifecycleScope.launchWhenStarted {
+            vm.restTimeValue.collect { restTimeResult ->
+                restTimeValue = restTimeResult
+            }
+        }
+    }
+
+    private fun observeRoundTimeValue() {
+        lifecycleScope.launchWhenStarted {
+            vm.roundTimeValue.collect { roundTimeResult ->
+                when (roundTimeResult) {
+                    0 -> roundTimeValue = setCustomSeconds(30)
+                    1 -> roundTimeValue = setCustomMinutes(1)
+                    2 -> roundTimeValue = setCustomMinutes(2)
+                    3 -> roundTimeValue = setCustomMinutes(3)
+                    4 -> roundTimeValue = setCustomMinutes(4)
+                    5 -> roundTimeValue = setCustomMinutes(5)
+                    6 -> roundTimeValue = setCustomMinutes(6)
+                    7 -> roundTimeValue = setCustomMinutes(7)
+                    8 -> roundTimeValue = setCustomMinutes(8)
+                    9 -> roundTimeValue = setCustomMinutes(9)
+                    10 -> roundTimeValue = setCustomMinutes(10)
+                }
+            }
+        }
+    }
+
+    private fun observeWhichRoundValue() {
+        lifecycleScope.launchWhenStarted {
+            vm.whichRoundValue.collect { roundValueResult ->
+                howMuchRoundValue = roundValueResult
+                Log.e("counter", "current value : $howMuchRoundValue")
+/*
+                    Log.e("counter", "current value : $howMuchRoundValue")
+                    Log.e("counter", "current value : $roundTimeController")
+
+                    if (restTimeValue.equals(0)) {
+                        when {
+                            howMuchRoundCounter < howMuchRoundValue -> {
+                                vm.startTimer(restTimeValue) {
+                                    howMuchRoundCounter++
+                                    vm.setWhichRound(roundTimeController)
+                                    Log.e("counter", "done running")
+                                }
+                            }
+                            else -> {
+                                howMuchRoundCounter = 0
+                                roundTimeController = 0
+                                with(binding) {
+                                    timerSet = null
+                                    isRest = false
+                                }
+                            }
+                        }
+                    } else {
+                        when {
+                            howMuchRoundCounter < howMuchRoundValue -> {
+                                vm.startRestTimer(restTimeValue) {
+                                    howMuchRoundCounter++
+                                    vm.setWhichRound(roundTimeController)
+                                    Log.e("counter", "done running")
+                                }
+                            }
+                            else -> {
+                                howMuchRoundCounter = 0
+                                roundTimeController = 0
+                                with(binding) {
+                                    timerSet = null
+                                    isRest = false
+                                }
+                            }
+                        }
+                    }*/
+
+                /*vm.startTimer(roundTimeValue) {
+                    howMuchRoundCounter++
+                    vm.setWhichRound(roundTimeController)
+
+                    if (restTimeValue.equals(0)) {
+                        when{
+                            howMuchRoundCounter < howMuchRoundValue ->{
+                                vm.startTimer(restTimeValue) {
+                                    vm.setWhichRound(roundTimeController)
+                                    Log.e("counter","done running")
+                                }
+                            }
+                            else ->{
+                                howMuchRoundCounter = 0
+                                roundTimeController = 0
+                                with(binding){
+                                    timerSet = null
+                                    isRest = false
+                                }
+                            }
+                        }
+
+                    } else {
+                        when{
+                            howMuchRoundCounter < howMuchRoundValue ->{
+                                vm.startRestTimer(restTimeValue) {
+                                    vm.setWhichRound(roundTimeController)
+                                    Log.e("counter","done running")
+                                }
+                            }
+                            else ->{
+                                howMuchRoundCounter = 0
+                                roundTimeController = 0
+                                with(binding){
+                                    timerSet = null
+                                    isRest = false
+                                }
+                            }
                         }
                     }
-                    timerSet = value
-                    invalidateAll()
-                })
+                }*/
+            }
+        }
+    }
 
-                vm.currentRestTime.observe(this@MainActivity, Observer { restTimeTicking ->
-                    val value = DateUtils.formatElapsedTime(restTimeTicking)
-                    when {
-                        value == "00:00" -> {
+    private fun observeCurrentRound() {
+        lifecycleScope.launchWhenStarted {
+            vm.currentRound.collect { currentRounds ->
+                binding.currentRound = "Round $currentRounds / $howMuchRoundValue"
+            }
+        }
+    }
+
+    private fun observeWarningValue() {
+        lifecycleScope.launchWhenStarted {
+            vm.warningValue.collect {
+                warningValue = it
+            }
+        }
+    }
+
+    private fun ActivityMainBinding.initView() {
+        initNumberPicker()
+        initRadioButton()
+        initTimer()
+
+        btnReset.setOnClickListener {
+            startActivity<MainActivity>()
+            finish()
+        }
+
+        btnStart.setOnClickListener {
+            startTimer()
+        }
+    }
+
+    private fun startTimer() {
+        vm.startTimer(roundTimeValue) {
+            howMuchRoundCounter++
+            if (restTimeValue.equals(0)) {
+                when {
+                    howMuchRoundCounter < howMuchRoundValue -> {
+                        startTimer()
+                    }
+                    else -> {
+                        howMuchRoundCounter = 0
+                        with(binding) {
                             timerSet = null
                             isRest = false
                         }
+                    }
+                }
+            } else {
+                when {
+                    howMuchRoundCounter < howMuchRoundValue -> {
+                        vm.startRestTimer(restTimeValue) {
+                            startTimer()
+                        }
+                    }
+                    else -> {
+                        howMuchRoundCounter = 0
+                        with(binding) {
+                            timerSet = null
+                            isRest = false
+                        }
+                    }
+                }
+            }
+        }
+
+    }
+
+    private fun ActivityMainBinding.initTimer() {
+        lifecycleScope.launchWhenStarted {
+            vm.currentTime.collect { timeTicking ->
+                timeTicking?.let {
+                    val value = DateUtils.formatElapsedTime(it)
+                    if (warningValue != null) {
+                        if (value == "00:$warningValue") {
+                            vm.warningBellSound()
+                        }
+                    }
+                    isRest = false
+                    timerSet = value
+                }
+            }
+
+            vm.currentRestTime.collect { restTimeTicking ->
+                Log.e("timer", "timer ticking : $restTimeTicking")
+                restTimeTicking?.let {
+                    val value = DateUtils.formatElapsedTime(it)
+                    when {
                         value != "00:00" -> {
                             isRest = true
                             timerSet = value
                         }
-                        else -> {
-                            timerSet = null
-                            isRest = false
-                        }
                     }
-                    invalidateAll()
-                })
-            })
+                }
+            }
+
         }
     }
 
@@ -239,89 +283,60 @@ class MainActivity : AppCompatActivity() {
         radioThirtySec.isEnabled = !isRunning
     }
 
-
-    private fun initNumberPicker(binding: ActivityMainBinding) {
-        binding.apply {
-            npRestTime.apply {
-                minValue = 0
-                maxValue = listRestTime.size - 1
-                displayedValues = listRestTime
-                if (value == 0) {
-                    vm.setRestTime(setCustomSeconds(0))
-                }
-                setOnValueChangedListener { _, _, newVal ->
-                    when (newVal) {
-                        0 -> vm.setRestTime(setCustomSeconds(0))
-                        1 -> vm.setRestTime(setCustomSeconds(15))
-                        2 -> vm.setRestTime(setCustomSeconds(30))
-                        3 -> vm.setRestTime(setCustomSeconds(60))
-                        4 -> vm.setRestTime(setCustomSeconds(90))
-                        5 -> vm.setRestTime(setCustomSeconds(120))
-                        6 -> vm.setRestTime(setCustomSeconds(150))
-                        7 -> vm.setRestTime(setCustomSeconds(180))
-                    }
-                }
-
+    private fun ActivityMainBinding.initNumberPicker() {
+        npRestTime.apply {
+            minValue = 0
+            maxValue = listRestTime.size - 1
+            displayedValues = listRestTime
+            if (value == 0) {
+                vm.setRestTime(setCustomSeconds(0))
             }
-            npRoundTime.apply {
-                minValue = 0
-                maxValue = listRoundTime.size - 1
-                displayedValues = listRoundTime
-                vm.setRoundTime(value)
-                setOnValueChangedListener { _, _, newVal ->
-                    vm.setRoundTime(newVal)
+            setOnValueChangedListener { _, _, newVal ->
+                when (newVal) {
+                    0 -> vm.setRestTime(setCustomSeconds(0))
+                    1 -> vm.setRestTime(setCustomSeconds(15))
+                    2 -> vm.setRestTime(setCustomSeconds(30))
+                    3 -> vm.setRestTime(setCustomSeconds(60))
+                    4 -> vm.setRestTime(setCustomSeconds(90))
+                    5 -> vm.setRestTime(setCustomSeconds(120))
+                    6 -> vm.setRestTime(setCustomSeconds(150))
+                    7 -> vm.setRestTime(setCustomSeconds(180))
                 }
             }
-            npWhichRound.apply {
-                minValue = 0
-                maxValue = listWhichRound.size - 1
-                displayedValues = listWhichRound
-                vm.setWhichRound(value + 1)
-                setOnValueChangedListener { _, _, newVal ->
-                    vm.setWhichRound(newVal + 1)
-                }
+
+        }
+
+        npRoundTime.apply {
+            minValue = 0
+            maxValue = listRoundTime.size - 1
+            displayedValues = listRoundTime
+            vm.setRoundTime(value)
+            setOnValueChangedListener { _, _, newVal ->
+                vm.setRoundTime(newVal)
+            }
+        }
+        npWhichRound.apply {
+            minValue = 0
+            maxValue = listWhichRound.size - 1
+            displayedValues = listWhichRound
+            vm.setWhichRound(value + 1)
+            setOnValueChangedListener { _, _, newVal ->
+                vm.setWhichRound(newVal + 1)
             }
         }
     }
 
-    private fun initRadioButton(binding: ActivityMainBinding) {
-        binding.apply {
-            radioGroupRoot.setOnCheckedChangeListener { _, checkedId ->
-                when (checkedId) {
-                    R.id.radioOff -> vm.setWarningValue(0)
-                    R.id.radioTenSec -> vm.setWarningValue(10)
-                    R.id.radioThirtySec -> vm.setWarningValue(30)
-                }
+    private fun ActivityMainBinding.initRadioButton() {
+        radioGroupRoot.setOnCheckedChangeListener { _, checkedId ->
+            when (checkedId) {
+                R.id.radioOff -> vm.setWarningValue(0)
+                R.id.radioTenSec -> vm.setWarningValue(10)
+                R.id.radioThirtySec -> vm.setWarningValue(30)
             }
         }
     }
 
-    private fun inflateAdsView(binding: ActivityMainBinding) {
-        binding.apply {
-            this@MainActivity.checkConnectivityStatus {
-                if (it) {
-                    MobileAds.initialize(this@MainActivity) {}
-                    val request = AdRequest.Builder().build()
-                    detailAdView.loadAd(request)
-                }
-            }
-
-        }
-
-    }
-
-    private fun inflateInterstitialAdsView(binding: ActivityMainBinding) {
-        binding.apply {
-            this@MainActivity.checkConnectivityStatus {
-                if (it) {
-                    mInterstitialAd = InterstitialAd(this@MainActivity)
-                    mInterstitialAd.apply {
-                        adUnitId = getString(R.string.interstitialAdmobUnitID)
-                        loadAd(AdRequest.Builder().build())
-                    }
-                }
-            }
-        }
+    private fun timerCounter() {
     }
 }
 

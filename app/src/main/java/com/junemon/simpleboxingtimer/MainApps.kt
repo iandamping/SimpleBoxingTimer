@@ -1,8 +1,6 @@
 package com.junemon.simpleboxingtimer
 
 import android.app.Application
-import com.crashlytics.android.Crashlytics
-import io.fabric.sdk.android.Fabric
 import org.koin.android.ext.koin.androidContext
 import org.koin.core.context.startKoin
 
@@ -16,7 +14,6 @@ class MainApps: Application() {
 
     override fun onCreate() {
         super.onCreate()
-        Fabric.with(this, Crashlytics())
         startKoin {
             androidContext(this@MainApps)
             injectData()
