@@ -26,7 +26,6 @@ class MainActivity : AppCompatActivity() {
     private var roundTimeValue: Long = 0
     private var restTimeValue: Long = 0
     private var howMuchRoundValue: Int = 0
-    private var isTimerRunning = false
     private var howMuchRoundCounter: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -52,8 +51,7 @@ class MainActivity : AppCompatActivity() {
     private fun observeIsTimmerRunning() {
         lifecycleScope.launchWhenStarted {
             vm.isTimerRunning.collect {
-                isTimerRunning = it
-                binding.disableView(isTimerRunning)
+                binding.disableView(it)
             }
         }
     }
@@ -108,8 +106,21 @@ class MainActivity : AppCompatActivity() {
         initRadioButton()
 
         btnReset.setOnClickListener {
-            startActivity<MainActivity>()
+            howMuchRoundCounter = 0
+            with(vm){
+                cancelAllTimer()
+                setTimmerIsRunning(false)
+                setWarningValue(0)
+            }
+            with(binding) {
+                currentRound = "Round 0 / 0"
+                timerSet = null
+                isRest = false
+            }
+
             finish()
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
 
         btnStart.setOnClickListener {
@@ -118,6 +129,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun startTimer() {
+        vm.setTimmerIsRunning(true)
         if (howMuchRoundCounter==0){
             binding.currentRound = "Round 0 / $howMuchRoundValue"
         }
@@ -144,6 +156,10 @@ class MainActivity : AppCompatActivity() {
                         currentRound = "Round 0 / 0"
                         timerSet = null
                         isRest = false
+                    }
+                    with(vm){
+                        setTimmerIsRunning(false)
+                        setWarningValue(0)
                     }
                 }
             }

@@ -78,7 +78,7 @@ class MainViewmodel(private val context:Context) : BaseViewModel() {
     }
 
 
-    private fun cancelAllTimer() {
+    fun cancelAllTimer() {
         if (::timer.isInitialized) {
             timer.cancel()
         }
