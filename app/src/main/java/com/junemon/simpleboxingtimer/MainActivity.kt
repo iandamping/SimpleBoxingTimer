@@ -138,15 +138,15 @@ class MainActivity : AppCompatActivity() {
         vm.startBellSound()
 
         vm.startTimer(roundTimeValue) {
-            vm.endBellSound()
             howMuchRoundCounter++
             binding.currentRound = "Round $howMuchRoundCounter / $howMuchRoundValue"
 
             when {
                 howMuchRoundCounter < howMuchRoundValue -> {
-                    if (restTimeValue.equals(0)) {
+                    if (restTimeValue == 0L) {
                         startTimer()
                     } else {
+                        vm.endBellSound()
                         startRestTimer()
                     }
                 }
