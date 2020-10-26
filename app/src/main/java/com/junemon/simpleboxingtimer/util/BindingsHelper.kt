@@ -1,10 +1,10 @@
-package com.junemon.simpleboxingtimer
+package com.junemon.simpleboxingtimer.util
 
 import android.view.View
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
-
+import com.junemon.simpleboxingtimer.R
 
 /**
  * Created by Ian Damping on 18,October,2019

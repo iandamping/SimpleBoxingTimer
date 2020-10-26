@@ -5,20 +5,25 @@ import android.text.format.DateUtils
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
+import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
-import com.junemon.simpleboxingtimer.TimerConstant.setCustomMinutes
-import com.junemon.simpleboxingtimer.TimerConstant.setCustomSeconds
+import com.google.android.gms.ads.MobileAds
 import com.junemon.simpleboxingtimer.databinding.ActivityMainBinding
+import com.junemon.simpleboxingtimer.util.TimerConstant.FLAGS_FULLSCREEN
+import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomMinutes
+import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomSeconds
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import org.koin.androidx.scope.lifecycleScope as koinLifecycleScope
 
+@ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private lateinit var mInterstitialAd: InterstitialAd
 
     private val vm: MainViewmodel by koinLifecycleScope.inject()
-
+    private val IMMERSIVE_FLAG_TIMEOUT = 500L
     private val listRestTime by lazy { resources.getStringArray(R.array.rest_time) }
     private val listRoundTime by lazy { resources.getStringArray(R.array.round_time) }
     private val listWhichRound by lazy { resources.getStringArray(R.array.which_round) }
@@ -46,6 +51,15 @@ class MainActivity : AppCompatActivity() {
         observeWarningValue()
         observeTimer()
         observeRestTimer()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        // Before setting full screen flags, we must wait a bit to let UI settle; otherwise, we may
+        // be trying to set app to immersive mode before it's ready and the flags do not stick
+        binding.root.postDelayed({
+            binding.root.systemUiVisibility = FLAGS_FULLSCREEN
+        }, IMMERSIVE_FLAG_TIMEOUT)
     }
 
     private fun observeIsTimmerRunning() {
@@ -107,7 +121,7 @@ class MainActivity : AppCompatActivity() {
 
         btnReset.setOnClickListener {
             howMuchRoundCounter = 0
-            with(vm){
+            with(vm) {
                 cancelAllTimer()
                 setTimmerIsRunning(false)
                 setWarningValue(0)
@@ -130,7 +144,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun startTimer() {
         vm.setTimmerIsRunning(true)
-        if (howMuchRoundCounter==0){
+        if (howMuchRoundCounter == 0) {
             binding.currentRound = "Round 0 / $howMuchRoundValue"
         }
 
@@ -157,7 +171,7 @@ class MainActivity : AppCompatActivity() {
                         timerSet = null
                         isRest = false
                     }
-                    with(vm){
+                    with(vm) {
                         setTimmerIsRunning(false)
                         setWarningValue(0)
                     }
@@ -268,6 +282,14 @@ class MainActivity : AppCompatActivity() {
                 R.id.radioThirtySec -> vm.setWarningValue(30)
             }
         }
+    }
+
+    private fun ActivityMainBinding.inflateAdsView() {
+        MobileAds.initialize(this@MainActivity) {
+
+        }
+        val request = AdRequest.Builder().build()
+        detailAdView.loadAd(request)
     }
 }
 

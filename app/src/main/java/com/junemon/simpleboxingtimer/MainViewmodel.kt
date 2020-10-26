@@ -3,11 +3,11 @@ package com.junemon.simpleboxingtimer
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.CountDownTimer
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
-import com.junemon.simpleboxingtimer.TimerConstant.DONE
-import com.junemon.simpleboxingtimer.TimerConstant.ONE_SECOND
-import kotlinx.coroutines.delay
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.junemon.simpleboxingtimer.util.TimerConstant.DONE
+import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +17,8 @@ import kotlinx.coroutines.launch
  * Github https://github.com/iandamping
  * Indonesia.
  */
-class MainViewmodel(private val context:Context) : BaseViewModel() {
+@ExperimentalCoroutinesApi
+class MainViewmodel(private val context:Context) : ViewModel() {
     private lateinit var timer: CountDownTimer
     private lateinit var restTimer: CountDownTimer
 
@@ -108,19 +109,19 @@ class MainViewmodel(private val context:Context) : BaseViewModel() {
     }
 
     fun startBellSound() {
-        vmScope.launch {
-            MediaPlayer.create(context, R.raw.boxing_start).start()
+        viewModelScope.launch {
+            MediaPlayer.create(context, R.raw.end_round_bell).start()
         }
     }
 
     fun endBellSound() {
-        vmScope.launch {
-            MediaPlayer.create(context, R.raw.boxing_end).start()
+        viewModelScope.launch {
+            MediaPlayer.create(context, R.raw.end_round_bell).start()
         }
     }
 
     fun warningBellSound() {
-        vmScope.launch {
+        viewModelScope.launch {
             MediaPlayer.create(context, R.raw.warning_sound).start()
         }
     }

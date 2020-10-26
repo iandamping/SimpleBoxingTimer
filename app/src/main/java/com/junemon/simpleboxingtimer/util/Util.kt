@@ -1,4 +1,4 @@
-package com.junemon.simpleboxingtimer
+package com.junemon.simpleboxingtimer.util
 
 import android.app.Activity
 import android.content.Context
