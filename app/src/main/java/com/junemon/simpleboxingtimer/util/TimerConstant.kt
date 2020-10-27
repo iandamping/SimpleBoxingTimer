@@ -9,6 +9,9 @@ import android.view.View
  */
 
 object TimerConstant {
+    const val ROUND_TIME_STATE = 0
+    const val REST_TIME_STATE = 1
+
      const val DONE = 0L
 
      const val ONE_SECOND = 1000L

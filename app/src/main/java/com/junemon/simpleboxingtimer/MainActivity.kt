@@ -1,25 +1,36 @@
 package com.junemon.simpleboxingtimer
 
+import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateUtils
+import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
+import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.install.model.AppUpdateType
+import com.google.android.play.core.install.model.UpdateAvailability
 import com.junemon.simpleboxingtimer.databinding.ActivityMainBinding
+import com.junemon.simpleboxingtimer.util.GenericPair
 import com.junemon.simpleboxingtimer.util.TimerConstant.FLAGS_FULLSCREEN
+import com.junemon.simpleboxingtimer.util.TimerConstant.REST_TIME_STATE
+import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomMinutes
 import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomSeconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.launch
+import timber.log.Timber
 import org.koin.androidx.scope.lifecycleScope as koinLifecycleScope
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
+    private val MY_REQUEST_CODE: Int = 0
     private lateinit var mInterstitialAd: InterstitialAd
 
     private val vm: MainViewmodel by koinLifecycleScope.inject()
@@ -32,6 +43,8 @@ class MainActivity : AppCompatActivity() {
     private var restTimeValue: Long = 0
     private var howMuchRoundValue: Int = 0
     private var howMuchRoundCounter: Int = 0
+
+    private var roundState: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,16 +63,28 @@ class MainActivity : AppCompatActivity() {
         observeWhichRoundValue()
         observeWarningValue()
         observeTimer()
-        observeRestTimer()
     }
 
     override fun onResume() {
         super.onResume()
+        checkUpdate()
         // Before setting full screen flags, we must wait a bit to let UI settle; otherwise, we may
         // be trying to set app to immersive mode before it's ready and the flags do not stick
         binding.root.postDelayed({
             binding.root.systemUiVisibility = FLAGS_FULLSCREEN
         }, IMMERSIVE_FLAG_TIMEOUT)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == MY_REQUEST_CODE) {
+            if (resultCode != RESULT_OK) {
+                Timber.e("Update flow failed! Result code: $resultCode")
+                // If the update is cancelled or fails,
+                // you can request to start the update again.
+                checkUpdate()
+            }
+        }
     }
 
     private fun observeIsTimmerRunning() {
@@ -118,6 +143,7 @@ class MainActivity : AppCompatActivity() {
         currentRound = "Round 0 / 0"
         initNumberPicker()
         initRadioButton()
+        // inflateAdsView()
 
         btnReset.setOnClickListener {
             howMuchRoundCounter = 0
@@ -140,82 +166,42 @@ class MainActivity : AppCompatActivity() {
         btnStart.setOnClickListener {
             startTimer()
         }
+        btnStop.setOnClickListener {
+            // vm.setTimmerIsRunning(false)
+            // vm.cancelAllTimer()
+        }
     }
 
     private fun startTimer() {
-        vm.setTimmerIsRunning(true)
         if (howMuchRoundCounter == 0) {
-            binding.currentRound = "Round 0 / $howMuchRoundValue"
+            binding.currentRound = "Round 1 / $howMuchRoundValue"
         }
-
-
-        vm.startBellSound()
-
-        vm.startTimer(roundTimeValue) {
-            howMuchRoundCounter++
-            binding.currentRound = "Round $howMuchRoundCounter / $howMuchRoundValue"
-
-            when {
-                howMuchRoundCounter < howMuchRoundValue -> {
-                    if (restTimeValue == 0L) {
-                        startTimer()
-                    } else {
-                        vm.endBellSound()
-                        startRestTimer()
-                    }
-                }
-                else -> {
-                    howMuchRoundCounter = 0
-                    with(binding) {
-                        currentRound = "Round 0 / 0"
-                        timerSet = null
-                        isRest = false
-                    }
-                    with(vm) {
-                        setTimmerIsRunning(false)
-                        setWarningValue(0)
-                    }
-                }
-            }
-        }
-    }
-
-    private fun startRestTimer() {
-        vm.startRestTimer(restTimeValue) {
-            startTimer()
-        }
-    }
-
-    private fun observeTimer() {
-        lifecycleScope.launchWhenStarted {
-            vm.currentTime.collect { timeTicking ->
-                timeTicking?.let {
-                    val value = DateUtils.formatElapsedTime(it)
-                    if (warningValue != null) {
-                        if (value == "00:$warningValue") {
-                            vm.warningBellSound()
+        with(vm){
+            setTimmerIsRunning(true)
+            startBellSound()
+            when(roundState){
+                ROUND_TIME_STATE ->{
+                    vm.startTimer(this@MainActivity.roundTimeValue) {
+                        howMuchRoundCounter++
+                        when {
+                            howMuchRoundCounter < howMuchRoundValue -> {
+                                startingTimer(REST_TIME_STATE)
+                            }
+                            else -> {
+                                finishedTimer()
+                            }
                         }
                     }
-                    with(binding) {
-                        isRest = false
-                        timerSet = value
-                    }
-
                 }
-            }
-        }
-    }
-
-    private fun observeRestTimer() {
-        lifecycleScope.launchWhenStarted {
-            vm.currentRestTime.collect { restTimeTicking ->
-                restTimeTicking?.let {
-                    val value = DateUtils.formatElapsedTime(it)
-                    when {
-                        value != "00:00" -> {
-                            with(binding) {
-                                isRest = true
-                                timerSet = value
+                REST_TIME_STATE ->{
+                    vm.startTimer(this@MainActivity.restTimeValue) {
+                        when {
+                            howMuchRoundCounter < howMuchRoundValue -> {
+                                binding.currentRound = "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
+                                startingTimer(ROUND_TIME_STATE)
+                            }
+                            else -> {
+                                finishedTimer()
                             }
                         }
                     }
@@ -224,8 +210,80 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun finishedTimer() {
+        howMuchRoundCounter = 0
+        with(binding) {
+            currentRound = "Round 0 / 0"
+            timerSet = null
+            isRest = false
+        }
+        with(vm) {
+            setTimmerIsRunning(false)
+            setIsRoundTimeRunning(ROUND_TIME_STATE)
+            setWarningValue(0)
+        }
+    }
+
+    private fun startingTimer(roundState:Int){
+        if (this@MainActivity.restTimeValue == 0L) {
+            startTimer()
+        } else {
+            with(vm){
+                endBellSound()
+                setIsRoundTimeRunning(roundState)
+            }
+            startTimer()
+        }
+    }
+
+    private fun observeTimer() {
+        lifecycleScope.launch {
+            vm.roundTimeState.combine(vm.currentTime){ state,timeTicking ->
+                GenericPair(state,timeTicking)
+            }.collect {
+                roundState = it.data1
+
+                when(it.data1){
+                    ROUND_TIME_STATE ->{
+                        it.data2?.let {timeTicking ->
+                            val value = DateUtils.formatElapsedTime(timeTicking)
+                            if (warningValue != null) {
+                                if ( value == "00:$warningValue"){
+                                    vm.warningBellSound()
+                                }
+                            }
+                            with(binding) {
+                                isRest = false
+                                timerSet = value
+                            }
+                        }
+                    }
+                    REST_TIME_STATE ->{
+                        it.data2?.let {timeTicking ->
+                            val value = DateUtils.formatElapsedTime(timeTicking)
+                            if (value != "00:00"){
+                                with(binding) {
+                                    isRest = true
+                                    timerSet = value
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+
     private fun ActivityMainBinding.disableView(isRunning: Boolean) {
-        btnStart.isEnabled = !isRunning
+        if (isRunning) {
+            btnStop.visibility = View.VISIBLE
+            btnStart.visibility = View.GONE
+        } else {
+            btnStop.visibility = View.GONE
+            btnStart.visibility = View.VISIBLE
+        }
+        // btnStart.isEnabled = !isRunning
         radioOff.isEnabled = !isRunning
         radioTenSec.isEnabled = !isRunning
         radioThirtySec.isEnabled = !isRunning
@@ -286,10 +344,23 @@ class MainActivity : AppCompatActivity() {
 
     private fun ActivityMainBinding.inflateAdsView() {
         MobileAds.initialize(this@MainActivity) {
-
+            Timber.e("init ads!")
         }
         val request = AdRequest.Builder().build()
         detailAdView.loadAd(request)
+    }
+
+    private fun checkUpdate() {
+        val updateManager = AppUpdateManagerFactory.create(this)
+        val appUpdateInfoTask = updateManager.appUpdateInfo
+        appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+                updateManager.startUpdateFlowForResult(
+                    appUpdateInfo,
+                    AppUpdateType.IMMEDIATE, this, MY_REQUEST_CODE
+                )
+            }
+        }
     }
 }
 

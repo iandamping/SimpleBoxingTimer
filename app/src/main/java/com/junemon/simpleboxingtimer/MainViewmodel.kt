@@ -7,6 +7,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.junemon.simpleboxingtimer.util.TimerConstant.DONE
 import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
+import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -30,6 +31,10 @@ class MainViewmodel(private val context:Context) : ViewModel() {
     private val _currentTime: MutableStateFlow<Long?> = MutableStateFlow(null)
     private val _currentRestTime: MutableStateFlow<Long?> = MutableStateFlow(null)
 
+    private val _roundTimeState: MutableStateFlow<Int> = MutableStateFlow(ROUND_TIME_STATE)
+
+    val roundTimeState: StateFlow<Int>
+        get() = _roundTimeState
 
     val warningValue: StateFlow<Int>
         get() = _warningValue
@@ -106,6 +111,10 @@ class MainViewmodel(private val context:Context) : ViewModel() {
 
     fun setTimmerIsRunning(data: Boolean) {
         _isTimerRunning.value = data
+    }
+
+    fun setIsRoundTimeRunning(data: Int) {
+        _roundTimeState.value = data
     }
 
     fun startBellSound() {

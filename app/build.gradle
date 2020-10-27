@@ -11,8 +11,8 @@ android {
         applicationId "com.junemon.simpleboxingtimer"
         minSdkVersion 16
         targetSdkVersion 29
-        versionCode 6
-        versionName "6.0"
+        versionCode 7
+        versionName "7.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         multiDexEnabled true
@@ -71,6 +71,6 @@ dependencies {
     implementation "org.koin:koin-android:$koin_version"
     implementation "org.koin:koin-androidx-scope:$koin_version"
     implementation "org.koin:koin-androidx-viewmodel:$koin_version"
-
+    implementation "com.google.android.play:core:1.8.2"
     implementation 'com.google.android.gms:play-services-ads:19.5.0'
 }

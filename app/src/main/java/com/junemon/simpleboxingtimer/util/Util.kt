@@ -33,3 +33,4 @@ inline fun <reified T : Activity> Context.startActivity(
 
 inline fun <reified T : Any> newIntent(ctx: Context): Intent = Intent(ctx, T::class.java)
 
+data class GenericPair<A, B>(val data1: A, val data2: B)
