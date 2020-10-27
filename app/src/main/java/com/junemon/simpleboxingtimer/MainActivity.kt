@@ -6,6 +6,7 @@ import android.text.format.DateUtils
 import android.view.View
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.InterstitialAd
@@ -43,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private var restTimeValue: Long = 0
     private var howMuchRoundValue: Int = 0
     private var howMuchRoundCounter: Int = 0
-
+    private var pausedTimeValue: Int? = null
     private var roundState: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -63,6 +64,7 @@ class MainActivity : AppCompatActivity() {
         observeWhichRoundValue()
         observeWarningValue()
         observeTimer()
+        observePausedTime()
     }
 
     override fun onResume() {
@@ -139,6 +141,16 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private fun observePausedTime() {
+        lifecycleScope.launchWhenStarted {
+            vm.pausedTime.collect { timeTicking ->
+                timeTicking?.let {
+                    pausedTimeValue = timeTicking.toInt()
+                }
+            }
+        }
+    }
+
     private fun ActivityMainBinding.initView() {
         currentRound = "Round 0 / 0"
         initNumberPicker()
@@ -146,62 +158,109 @@ class MainActivity : AppCompatActivity() {
         // inflateAdsView()
 
         btnReset.setOnClickListener {
-            howMuchRoundCounter = 0
-            with(vm) {
-                cancelAllTimer()
-                setTimmerIsRunning(false)
-                setWarningValue(0)
-            }
-            with(binding) {
-                currentRound = "Round 0 / 0"
-                timerSet = null
-                isRest = false
-            }
-
-            finish()
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+            resettingAll()
         }
 
         btnStart.setOnClickListener {
             startTimer()
+            if (btnStart.isVisible) {
+                btnStart.visibility = View.GONE
+                btnStop.visibility = View.VISIBLE
+            }
         }
         btnStop.setOnClickListener {
-            // vm.setTimmerIsRunning(false)
-            // vm.cancelAllTimer()
+            vm.cancelAllTimer()
+            if (btnStop.isVisible) {
+                btnStop.visibility = View.GONE
+                btnStart.visibility = View.VISIBLE
+            }
         }
+    }
+
+    private fun resettingAll() {
+        howMuchRoundCounter = 0
+        with(vm) {
+            cancelAllTimer()
+            setTimmerIsRunning(false)
+            setWarningValue(0)
+        }
+        with(binding) {
+            currentRound = "Round 0 / 0"
+            timerSet = null
+            isRest = false
+        }
+        roundTimeValue = 0
+        restTimeValue = 0
+        howMuchRoundValue = 0
+        howMuchRoundCounter = 0
+
+        finish()
+        startActivity(intent)
+        overridePendingTransition(0, 0)
     }
 
     private fun startTimer() {
         if (howMuchRoundCounter == 0) {
             binding.currentRound = "Round 1 / $howMuchRoundValue"
         }
-        with(vm){
+        with(vm) {
             setTimmerIsRunning(true)
             startBellSound()
-            when(roundState){
-                ROUND_TIME_STATE ->{
-                    vm.startTimer(this@MainActivity.roundTimeValue) {
-                        howMuchRoundCounter++
-                        when {
-                            howMuchRoundCounter < howMuchRoundValue -> {
-                                startingTimer(REST_TIME_STATE)
+            when (roundState) {
+                ROUND_TIME_STATE -> {
+                    if (pausedTimeValue != null) {
+                        vm.startTimer(setCustomSeconds(this@MainActivity.pausedTimeValue!!)) {
+                            howMuchRoundCounter++
+                            pausedTimeValue = null
+                            when {
+                                howMuchRoundCounter < howMuchRoundValue -> {
+                                    startingTimer(REST_TIME_STATE)
+                                }
+                                else -> {
+                                    finishedTimer()
+                                }
                             }
-                            else -> {
-                                finishedTimer()
+                        }
+                    } else {
+                        vm.startTimer(this@MainActivity.roundTimeValue) {
+                            howMuchRoundCounter++
+                            when {
+                                howMuchRoundCounter < howMuchRoundValue -> {
+                                    startingTimer(REST_TIME_STATE)
+                                }
+                                else -> {
+                                    finishedTimer()
+                                }
                             }
                         }
                     }
                 }
-                REST_TIME_STATE ->{
-                    vm.startTimer(this@MainActivity.restTimeValue) {
-                        when {
-                            howMuchRoundCounter < howMuchRoundValue -> {
-                                binding.currentRound = "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
-                                startingTimer(ROUND_TIME_STATE)
+                REST_TIME_STATE -> {
+                    if (pausedTimeValue != null) {
+                        vm.startTimer(setCustomSeconds(this@MainActivity.pausedTimeValue!!)) {
+                            pausedTimeValue = null
+                            when {
+                                howMuchRoundCounter < howMuchRoundValue -> {
+                                    binding.currentRound =
+                                        "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
+                                    startingTimer(ROUND_TIME_STATE)
+                                }
+                                else -> {
+                                    finishedTimer()
+                                }
                             }
-                            else -> {
-                                finishedTimer()
+                        }
+                    } else {
+                        vm.startTimer(this@MainActivity.restTimeValue) {
+                            when {
+                                howMuchRoundCounter < howMuchRoundValue -> {
+                                    binding.currentRound =
+                                        "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
+                                    startingTimer(ROUND_TIME_STATE)
+                                }
+                                else -> {
+                                    finishedTimer()
+                                }
                             }
                         }
                     }
@@ -216,6 +275,11 @@ class MainActivity : AppCompatActivity() {
             currentRound = "Round 0 / 0"
             timerSet = null
             isRest = false
+
+            if (btnStop.isVisible) {
+                btnStop.visibility = View.GONE
+                btnStart.visibility = View.VISIBLE
+            }
         }
         with(vm) {
             setTimmerIsRunning(false)
@@ -224,11 +288,11 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startingTimer(roundState:Int){
+    private fun startingTimer(roundState: Int) {
         if (this@MainActivity.restTimeValue == 0L) {
             startTimer()
         } else {
-            with(vm){
+            with(vm) {
                 endBellSound()
                 setIsRoundTimeRunning(roundState)
             }
@@ -238,17 +302,17 @@ class MainActivity : AppCompatActivity() {
 
     private fun observeTimer() {
         lifecycleScope.launch {
-            vm.roundTimeState.combine(vm.currentTime){ state,timeTicking ->
-                GenericPair(state,timeTicking)
+            vm.roundTimeState.combine(vm.currentTime) { state, timeTicking ->
+                GenericPair(state, timeTicking)
             }.collect {
                 roundState = it.data1
 
-                when(it.data1){
-                    ROUND_TIME_STATE ->{
-                        it.data2?.let {timeTicking ->
+                when (it.data1) {
+                    ROUND_TIME_STATE -> {
+                        it.data2?.let { timeTicking ->
                             val value = DateUtils.formatElapsedTime(timeTicking)
                             if (warningValue != null) {
-                                if ( value == "00:$warningValue"){
+                                if (value == "00:$warningValue") {
                                     vm.warningBellSound()
                                 }
                             }
@@ -258,10 +322,10 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     }
-                    REST_TIME_STATE ->{
-                        it.data2?.let {timeTicking ->
+                    REST_TIME_STATE -> {
+                        it.data2?.let { timeTicking ->
                             val value = DateUtils.formatElapsedTime(timeTicking)
-                            if (value != "00:00"){
+                            if (value != "00:00") {
                                 with(binding) {
                                     isRest = true
                                     timerSet = value
@@ -274,16 +338,7 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-
     private fun ActivityMainBinding.disableView(isRunning: Boolean) {
-        if (isRunning) {
-            btnStop.visibility = View.VISIBLE
-            btnStart.visibility = View.GONE
-        } else {
-            btnStop.visibility = View.GONE
-            btnStart.visibility = View.VISIBLE
-        }
-        // btnStart.isEnabled = !isRunning
         radioOff.isEnabled = !isRunning
         radioTenSec.isEnabled = !isRunning
         radioThirtySec.isEnabled = !isRunning

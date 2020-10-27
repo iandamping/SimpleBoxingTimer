@@ -21,7 +21,6 @@ import kotlinx.coroutines.launch
 @ExperimentalCoroutinesApi
 class MainViewmodel(private val context:Context) : ViewModel() {
     private lateinit var timer: CountDownTimer
-    private lateinit var restTimer: CountDownTimer
 
     private val _isTimerRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
     private val _restTimeValue: MutableStateFlow<Long> = MutableStateFlow(0)
@@ -29,8 +28,7 @@ class MainViewmodel(private val context:Context) : ViewModel() {
     private val _whichRoundValue: MutableStateFlow<Int> = MutableStateFlow(0)
     private val _warningValue: MutableStateFlow<Int> = MutableStateFlow(0)
     private val _currentTime: MutableStateFlow<Long?> = MutableStateFlow(null)
-    private val _currentRestTime: MutableStateFlow<Long?> = MutableStateFlow(null)
-
+    private val _pausedTime: MutableStateFlow<Long?> = MutableStateFlow(null)
     private val _roundTimeState: MutableStateFlow<Int> = MutableStateFlow(ROUND_TIME_STATE)
 
     val roundTimeState: StateFlow<Int>
@@ -42,8 +40,8 @@ class MainViewmodel(private val context:Context) : ViewModel() {
     val currentTime: StateFlow<Long?>
         get() = _currentTime
 
-    val currentRestTime: StateFlow<Long?>
-        get() = _currentRestTime
+    val pausedTime: StateFlow<Long?>
+        get() = _pausedTime
 
     val isTimerRunning: MutableStateFlow<Boolean>
         get() = _isTimerRunning
@@ -61,35 +59,22 @@ class MainViewmodel(private val context:Context) : ViewModel() {
         timer = object : CountDownTimer(durationTime, ONE_SECOND) {
             override fun onFinish() {
                 _currentTime.value = DONE
+                _pausedTime.value = DONE
                 finishTicking.invoke()
             }
 
             override fun onTick(millisUntilFinished: Long) {
                 _currentTime.value = (millisUntilFinished / ONE_SECOND)
+                _pausedTime.value = (millisUntilFinished / ONE_SECOND)
             }
         }.start()
     }
 
-    fun startRestTimer(durationTime: Long,finishTicking:()->Unit) {
-        restTimer = object : CountDownTimer(durationTime, ONE_SECOND) {
-            override fun onFinish() {
-                _currentRestTime.value = DONE
-                finishTicking.invoke()
-            }
-
-            override fun onTick(millisUntilFinished: Long) {
-                _currentRestTime.value = (millisUntilFinished / ONE_SECOND)
-            }
-        }.start()
-    }
 
 
     fun cancelAllTimer() {
         if (::timer.isInitialized) {
             timer.cancel()
-        }
-        if (::restTimer.isInitialized) {
-            restTimer.cancel()
         }
     }
 
@@ -99,6 +84,10 @@ class MainViewmodel(private val context:Context) : ViewModel() {
 
     fun setRoundTime(data: Int) {
         _roundTimeValue.value = data
+    }
+
+    fun setPausedTime(data:Long){
+        _pausedTime.value = data
     }
 
     fun setWhichRound(data: Int) {
