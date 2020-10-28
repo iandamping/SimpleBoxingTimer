@@ -86,10 +86,6 @@ class MainViewmodel(private val context:Context) : ViewModel() {
         _roundTimeValue.value = data
     }
 
-    fun setPausedTime(data:Long){
-        _pausedTime.value = data
-    }
-
     fun setWhichRound(data: Int) {
         _whichRoundValue.value = data
     }
