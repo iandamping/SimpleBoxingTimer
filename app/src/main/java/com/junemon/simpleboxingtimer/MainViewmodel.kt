@@ -28,7 +28,7 @@ class MainViewmodel(private val context:Context) : ViewModel() {
     private val _whichRoundValue: MutableStateFlow<Int> = MutableStateFlow(0)
     private val _warningValue: MutableStateFlow<Int> = MutableStateFlow(0)
     private val _currentTime: MutableStateFlow<Long?> = MutableStateFlow(null)
-    private val _pausedTime: MutableStateFlow<Long?> = MutableStateFlow(null)
+    private val _pausedTime: MutableStateFlow<Long> = MutableStateFlow(0)
     private val _roundTimeState: MutableStateFlow<Int> = MutableStateFlow(ROUND_TIME_STATE)
 
     val roundTimeState: StateFlow<Int>
@@ -40,7 +40,7 @@ class MainViewmodel(private val context:Context) : ViewModel() {
     val currentTime: StateFlow<Long?>
         get() = _currentTime
 
-    val pausedTime: StateFlow<Long?>
+    val pausedTime: StateFlow<Long>
         get() = _pausedTime
 
     val isTimerRunning: MutableStateFlow<Boolean>

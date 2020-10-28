@@ -24,7 +24,6 @@ import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomSeconds
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.launch
 import timber.log.Timber
 import org.koin.androidx.scope.lifecycleScope as koinLifecycleScope
 
@@ -32,10 +31,11 @@ import org.koin.androidx.scope.lifecycleScope as koinLifecycleScope
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
     private val MY_REQUEST_CODE: Int = 0
+    private val IMMERSIVE_FLAG_TIMEOUT = 500L
+
     private lateinit var mInterstitialAd: InterstitialAd
 
     private val vm: MainViewmodel by koinLifecycleScope.inject()
-    private val IMMERSIVE_FLAG_TIMEOUT = 500L
     private val listRestTime by lazy { resources.getStringArray(R.array.rest_time) }
     private val listRoundTime by lazy { resources.getStringArray(R.array.round_time) }
     private val listWhichRound by lazy { resources.getStringArray(R.array.which_round) }
@@ -44,7 +44,7 @@ class MainActivity : AppCompatActivity() {
     private var restTimeValue: Long = 0
     private var howMuchRoundValue: Int = 0
     private var howMuchRoundCounter: Int = 0
-    private var pausedTimeValue: Int? = null
+    private var pausedTimeValue: Int = 0
     private var roundState: Int = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -144,9 +144,7 @@ class MainActivity : AppCompatActivity() {
     private fun observePausedTime() {
         lifecycleScope.launchWhenStarted {
             vm.pausedTime.collect { timeTicking ->
-                timeTicking?.let {
-                    pausedTimeValue = timeTicking.toInt()
-                }
+                pausedTimeValue = timeTicking.toInt()
             }
         }
     }
@@ -178,7 +176,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun resettingAll() {
-        howMuchRoundCounter = 0
         with(vm) {
             cancelAllTimer()
             setTimmerIsRunning(false)
@@ -205,16 +202,15 @@ class MainActivity : AppCompatActivity() {
         }
         with(vm) {
             setTimmerIsRunning(true)
-            startBellSound()
             when (roundState) {
                 ROUND_TIME_STATE -> {
-                    if (pausedTimeValue != null) {
-                        vm.startTimer(setCustomSeconds(this@MainActivity.pausedTimeValue!!)) {
+                    if (pausedTimeValue != 0) {
+                        vm.startTimer(setCustomSeconds(this@MainActivity.pausedTimeValue)) {
                             howMuchRoundCounter++
-                            pausedTimeValue = null
+                            pausedTimeValue = 0
                             when {
                                 howMuchRoundCounter < howMuchRoundValue -> {
-                                    startingTimer(REST_TIME_STATE)
+                                    startingTimerForRoundOnly()
                                 }
                                 else -> {
                                     finishedTimer()
@@ -222,11 +218,12 @@ class MainActivity : AppCompatActivity() {
                             }
                         }
                     } else {
+                        startBellSound()
                         vm.startTimer(this@MainActivity.roundTimeValue) {
                             howMuchRoundCounter++
                             when {
                                 howMuchRoundCounter < howMuchRoundValue -> {
-                                    startingTimer(REST_TIME_STATE)
+                                    startingTimerForRoundOnly()
                                 }
                                 else -> {
                                     finishedTimer()
@@ -236,32 +233,14 @@ class MainActivity : AppCompatActivity() {
                     }
                 }
                 REST_TIME_STATE -> {
-                    if (pausedTimeValue != null) {
-                        vm.startTimer(setCustomSeconds(this@MainActivity.pausedTimeValue!!)) {
-                            pausedTimeValue = null
-                            when {
-                                howMuchRoundCounter < howMuchRoundValue -> {
-                                    binding.currentRound =
-                                        "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
-                                    startingTimer(ROUND_TIME_STATE)
-                                }
-                                else -> {
-                                    finishedTimer()
-                                }
-                            }
+                    if (pausedTimeValue != 0) {
+                        vm.startTimer(setCustomSeconds(this@MainActivity.pausedTimeValue)) {
+                            pausedTimeValue = 0
+                            startingTimerForRestOnly()
                         }
                     } else {
                         vm.startTimer(this@MainActivity.restTimeValue) {
-                            when {
-                                howMuchRoundCounter < howMuchRoundValue -> {
-                                    binding.currentRound =
-                                        "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
-                                    startingTimer(ROUND_TIME_STATE)
-                                }
-                                else -> {
-                                    finishedTimer()
-                                }
-                            }
+                            startingTimerForRestOnly()
                         }
                     }
                 }
@@ -288,20 +267,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private fun startingTimer(roundState: Int) {
+    private fun startingTimerForRoundOnly() {
         if (this@MainActivity.restTimeValue == 0L) {
+            binding.currentRound = "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
+            vm.setIsRoundTimeRunning(ROUND_TIME_STATE)
             startTimer()
         } else {
             with(vm) {
                 endBellSound()
-                setIsRoundTimeRunning(roundState)
+                setIsRoundTimeRunning(REST_TIME_STATE)
             }
             startTimer()
         }
     }
 
+    private fun startingTimerForRestOnly() {
+        binding.currentRound = "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
+        vm.setIsRoundTimeRunning(ROUND_TIME_STATE)
+        startTimer()
+    }
+
     private fun observeTimer() {
-        lifecycleScope.launch {
+        lifecycleScope.launchWhenStarted {
             vm.roundTimeState.combine(vm.currentTime) { state, timeTicking ->
                 GenericPair(state, timeTicking)
             }.collect {
