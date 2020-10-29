@@ -17,6 +17,7 @@ import com.google.android.play.core.install.model.UpdateAvailability
 import com.junemon.simpleboxingtimer.databinding.ActivityMainBinding
 import com.junemon.simpleboxingtimer.util.GenericPair
 import com.junemon.simpleboxingtimer.util.TimerConstant.FLAGS_FULLSCREEN
+import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
 import com.junemon.simpleboxingtimer.util.TimerConstant.REST_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomMinutes
@@ -205,7 +206,7 @@ class MainActivity : AppCompatActivity() {
             when (roundState) {
                 ROUND_TIME_STATE -> {
                     if (pausedTimeValue != 0) {
-                        vm.startTimer(setCustomSeconds(this@MainActivity.pausedTimeValue)) {
+                        vm.startTimer(this@MainActivity.pausedTimeValue * ONE_SECOND) {
                             howMuchRoundCounter++
                             pausedTimeValue = 0
                             when {
@@ -234,7 +235,7 @@ class MainActivity : AppCompatActivity() {
                 }
                 REST_TIME_STATE -> {
                     if (pausedTimeValue != 0) {
-                        vm.startTimer(setCustomSeconds(this@MainActivity.pausedTimeValue)) {
+                        vm.startTimer(this@MainActivity.pausedTimeValue * ONE_SECOND) {
                             pausedTimeValue = 0
                             startingTimerForRestOnly()
                         }
@@ -261,6 +262,7 @@ class MainActivity : AppCompatActivity() {
             }
         }
         with(vm) {
+            endBellSound()
             setTimmerIsRunning(false)
             setIsRoundTimeRunning(ROUND_TIME_STATE)
             setWarningValue(0)
