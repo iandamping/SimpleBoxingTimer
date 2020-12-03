@@ -9,7 +9,6 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.InterstitialAd
 import com.google.android.gms.ads.MobileAds
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
@@ -21,20 +20,18 @@ import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
 import com.junemon.simpleboxingtimer.util.TimerConstant.REST_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomMinutes
-import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomSeconds
+import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 import org.koin.androidx.scope.lifecycleScope as koinLifecycleScope
+private const val MY_REQUEST_CODE: Int = 0
+private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-    private val MY_REQUEST_CODE: Int = 0
-    private val IMMERSIVE_FLAG_TIMEOUT = 500L
-
-    private lateinit var mInterstitialAd: InterstitialAd
 
     private val vm: MainViewmodel by koinLifecycleScope.inject()
     private val listRestTime by lazy { resources.getStringArray(R.array.rest_time) }
@@ -50,6 +47,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        checkUpdate()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -70,7 +68,6 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        checkUpdate()
         // Before setting full screen flags, we must wait a bit to let UI settle; otherwise, we may
         // be trying to set app to immersive mode before it's ready and the flags do not stick
         binding.root.postDelayed({
@@ -91,62 +88,50 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun observeIsTimmerRunning() {
-        lifecycleScope.launchWhenStarted {
-            vm.isTimerRunning.collect {
-                binding.disableView(it)
-            }
+        vm.isTimerRunning.observe(this) {
+            binding.disableView(it)
         }
     }
 
     private fun observeRestTimeValue() {
-        lifecycleScope.launchWhenStarted {
-            vm.restTimeValue.collect { restTimeResult ->
-                restTimeValue = restTimeResult
-            }
+        vm.restTimeValue.observe(this) { restTimeResult ->
+            restTimeValue = restTimeResult
         }
     }
 
     private fun observeRoundTimeValue() {
-        lifecycleScope.launchWhenStarted {
-            vm.roundTimeValue.collect { roundTimeResult ->
-                when (roundTimeResult) {
-                    0 -> roundTimeValue = setCustomSeconds(30)
-                    1 -> roundTimeValue = setCustomMinutes(1)
-                    2 -> roundTimeValue = setCustomMinutes(2)
-                    3 -> roundTimeValue = setCustomMinutes(3)
-                    4 -> roundTimeValue = setCustomMinutes(4)
-                    5 -> roundTimeValue = setCustomMinutes(5)
-                    6 -> roundTimeValue = setCustomMinutes(6)
-                    7 -> roundTimeValue = setCustomMinutes(7)
-                    8 -> roundTimeValue = setCustomMinutes(8)
-                    9 -> roundTimeValue = setCustomMinutes(9)
-                    10 -> roundTimeValue = setCustomMinutes(10)
-                }
+        vm.roundTimeValue.observe(this) { roundTimeResult ->
+            when (roundTimeResult) {
+                0 -> roundTimeValue = setCustomTime(30)
+                1 -> roundTimeValue = setCustomMinutes(1)
+                2 -> roundTimeValue = setCustomMinutes(2)
+                3 -> roundTimeValue = setCustomMinutes(3)
+                4 -> roundTimeValue = setCustomMinutes(4)
+                5 -> roundTimeValue = setCustomMinutes(5)
+                6 -> roundTimeValue = setCustomMinutes(6)
+                7 -> roundTimeValue = setCustomMinutes(7)
+                8 -> roundTimeValue = setCustomMinutes(8)
+                9 -> roundTimeValue = setCustomMinutes(9)
+                10 -> roundTimeValue = setCustomMinutes(10)
             }
         }
     }
 
     private fun observeWhichRoundValue() {
-        lifecycleScope.launchWhenStarted {
-            vm.whichRoundValue.collect { roundValueResult ->
-                howMuchRoundValue = roundValueResult
-            }
+        vm.whichRoundValue.observe(this) { roundValueResult ->
+            howMuchRoundValue = roundValueResult
         }
     }
 
     private fun observeWarningValue() {
-        lifecycleScope.launchWhenStarted {
-            vm.warningValue.collect {
-                warningValue = it
-            }
+        vm.warningValue.observe(this) {
+            warningValue = it
         }
     }
 
     private fun observePausedTime() {
-        lifecycleScope.launchWhenStarted {
-            vm.pausedTime.collect { timeTicking ->
-                pausedTimeValue = timeTicking.toInt()
-            }
+        vm.pausedTime.observe(this) { timeTicking ->
+            pausedTimeValue = timeTicking.toInt()
         }
     }
 
@@ -154,7 +139,7 @@ class MainActivity : AppCompatActivity() {
         currentRound = "Round 0 / 0"
         initNumberPicker()
         initRadioButton()
-        // inflateAdsView()
+        inflateAdsView()
 
         btnReset.setOnClickListener {
             resettingAll()
@@ -339,18 +324,18 @@ class MainActivity : AppCompatActivity() {
             maxValue = listRestTime.size - 1
             displayedValues = listRestTime
             if (value == 0) {
-                vm.setRestTime(setCustomSeconds(0))
+                vm.setRestTime(setCustomTime(0))
             }
             setOnValueChangedListener { _, _, newVal ->
                 when (newVal) {
-                    0 -> vm.setRestTime(setCustomSeconds(0))
-                    1 -> vm.setRestTime(setCustomSeconds(15))
-                    2 -> vm.setRestTime(setCustomSeconds(30))
-                    3 -> vm.setRestTime(setCustomSeconds(60))
-                    4 -> vm.setRestTime(setCustomSeconds(90))
-                    5 -> vm.setRestTime(setCustomSeconds(120))
-                    6 -> vm.setRestTime(setCustomSeconds(150))
-                    7 -> vm.setRestTime(setCustomSeconds(180))
+                    0 -> vm.setRestTime(setCustomTime(0))
+                    1 -> vm.setRestTime(setCustomTime(15))
+                    2 -> vm.setRestTime(setCustomTime(30))
+                    3 -> vm.setRestTime(setCustomTime(60))
+                    4 -> vm.setRestTime(setCustomTime(90))
+                    5 -> vm.setRestTime(setCustomTime(120))
+                    6 -> vm.setRestTime(setCustomTime(150))
+                    7 -> vm.setRestTime(setCustomTime(180))
                 }
             }
 

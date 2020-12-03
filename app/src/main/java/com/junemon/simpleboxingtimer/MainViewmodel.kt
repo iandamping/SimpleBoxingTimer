@@ -3,6 +3,8 @@ package com.junemon.simpleboxingtimer
 import android.content.Context
 import android.media.MediaPlayer
 import android.os.CountDownTimer
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.junemon.simpleboxingtimer.util.TimerConstant.DONE
@@ -22,37 +24,37 @@ import kotlinx.coroutines.launch
 class MainViewmodel(private val context:Context) : ViewModel() {
     private lateinit var timer: CountDownTimer
 
-    private val _isTimerRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
-    private val _restTimeValue: MutableStateFlow<Long> = MutableStateFlow(0)
-    private val _roundTimeValue: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val _whichRoundValue: MutableStateFlow<Int> = MutableStateFlow(0)
-    private val _warningValue: MutableStateFlow<Int> = MutableStateFlow(0)
+    private val _isTimerRunning: MutableLiveData<Boolean> = MutableLiveData()
+    private val _restTimeValue: MutableLiveData<Long> = MutableLiveData()
+    private val _roundTimeValue: MutableLiveData<Int> = MutableLiveData()
+    private val _whichRoundValue: MutableLiveData<Int> = MutableLiveData()
+    private val _warningValue: MutableLiveData<Int> = MutableLiveData()
     private val _currentTime: MutableStateFlow<Long?> = MutableStateFlow(null)
-    private val _pausedTime: MutableStateFlow<Long> = MutableStateFlow(0)
+    private val _pausedTime: MutableLiveData<Long> = MutableLiveData()
     private val _roundTimeState: MutableStateFlow<Int> = MutableStateFlow(ROUND_TIME_STATE)
 
     val roundTimeState: StateFlow<Int>
         get() = _roundTimeState
 
-    val warningValue: StateFlow<Int>
+    val warningValue: LiveData<Int>
         get() = _warningValue
 
     val currentTime: StateFlow<Long?>
         get() = _currentTime
 
-    val pausedTime: StateFlow<Long>
+    val pausedTime: LiveData<Long>
         get() = _pausedTime
 
-    val isTimerRunning: MutableStateFlow<Boolean>
+    val isTimerRunning: MutableLiveData<Boolean>
         get() = _isTimerRunning
 
-    val restTimeValue: StateFlow<Long>
+    val restTimeValue: LiveData<Long>
         get() = _restTimeValue
 
-    val roundTimeValue: StateFlow<Int>
+    val roundTimeValue: LiveData<Int>
         get() = _roundTimeValue
 
-    val whichRoundValue: StateFlow<Int>
+    val whichRoundValue: LiveData<Int>
         get() = _whichRoundValue
 
     fun startTimer(durationTime: Long,finishTicking:()->Unit) {

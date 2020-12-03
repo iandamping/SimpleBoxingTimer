@@ -20,6 +20,8 @@ object TimerConstant {
 
     fun setCustomSeconds(data: Int) = data % 60 * 1000L
 
+    fun setCustomTime(data:Int) = data * 1000L
+
     /** Combination of all flags required to put activity into immersive mode */
     const val FLAGS_FULLSCREEN =
         View.SYSTEM_UI_FLAG_LOW_PROFILE or
