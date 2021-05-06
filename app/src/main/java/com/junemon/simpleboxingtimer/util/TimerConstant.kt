@@ -9,6 +9,11 @@ import android.view.View
  */
 
 object TimerConstant {
+    const val MY_REQUEST_CODE: Int = 0
+    const val IMMERSIVE_FLAG_TIMEOUT = 500L
+
+    const val DEFAULT_INTEGER_VALUE = 0
+    const val DEFAULT_LONG_VALUE = 0L
     const val ROUND_TIME_STATE = 0
     const val REST_TIME_STATE = 1
 

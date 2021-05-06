@@ -7,26 +7,30 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.junemon.simpleboxingtimer.util.TimerConstant
 import com.junemon.simpleboxingtimer.util.TimerConstant.DONE
 import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
 import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
-import kotlinx.coroutines.ExperimentalCoroutinesApi
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 /**
  * Created by Ian Damping on 18,October,2019
  * Github https://github.com/iandamping
  * Indonesia.
  */
-@ExperimentalCoroutinesApi
-class MainViewmodel(private val context:Context) : ViewModel() {
+@HiltViewModel
+class MainViewmodel @Inject constructor(@ApplicationContext private val context: Context) :
+    ViewModel() {
     private lateinit var timer: CountDownTimer
 
     private val _isTimerRunning: MutableLiveData<Boolean> = MutableLiveData()
     private val _restTimeValue: MutableLiveData<Long> = MutableLiveData()
-    private val _roundTimeValue: MutableLiveData<Int> = MutableLiveData()
+    private val _roundTimeValue: MutableLiveData<Long> = MutableLiveData()
     private val _whichRoundValue: MutableLiveData<Int> = MutableLiveData()
     private val _warningValue: MutableLiveData<Int> = MutableLiveData()
     private val _currentTime: MutableStateFlow<Long?> = MutableStateFlow(null)
@@ -51,13 +55,13 @@ class MainViewmodel(private val context:Context) : ViewModel() {
     val restTimeValue: LiveData<Long>
         get() = _restTimeValue
 
-    val roundTimeValue: LiveData<Int>
+    val roundTimeValue: LiveData<Long>
         get() = _roundTimeValue
 
     val whichRoundValue: LiveData<Int>
         get() = _whichRoundValue
 
-    fun startTimer(durationTime: Long,finishTicking:()->Unit) {
+    fun startTimer(durationTime: Long, finishTicking: () -> Unit) {
         timer = object : CountDownTimer(durationTime, ONE_SECOND) {
             override fun onFinish() {
                 _currentTime.value = DONE
@@ -72,8 +76,6 @@ class MainViewmodel(private val context:Context) : ViewModel() {
         }.start()
     }
 
-
-
     fun cancelAllTimer() {
         if (::timer.isInitialized) {
             timer.cancel()
@@ -85,7 +87,19 @@ class MainViewmodel(private val context:Context) : ViewModel() {
     }
 
     fun setRoundTime(data: Int) {
-        _roundTimeValue.value = data
+        _roundTimeValue.value = when (data) {
+            0 -> TimerConstant.setCustomTime(30)
+            1 -> TimerConstant.setCustomMinutes(1)
+            2 -> TimerConstant.setCustomMinutes(2)
+            3 -> TimerConstant.setCustomMinutes(3)
+            4 -> TimerConstant.setCustomMinutes(4)
+            5 -> TimerConstant.setCustomMinutes(5)
+            6 -> TimerConstant.setCustomMinutes(6)
+            7 -> TimerConstant.setCustomMinutes(7)
+            8 -> TimerConstant.setCustomMinutes(8)
+            9 -> TimerConstant.setCustomMinutes(9)
+            else -> TimerConstant.setCustomMinutes(10)
+        }
     }
 
     fun setWhichRound(data: Int) {
