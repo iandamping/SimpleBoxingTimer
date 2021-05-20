@@ -14,10 +14,16 @@ import com.junemon.simpleboxingtimer.R
 
 @BindingAdapter("bindingTimerHelper")
 fun setTimerHelper(view:TextView, data:String?){
-    if (data!=null){
-        view.visibility = View.VISIBLE
-    } else if (data == "00:00" || data == null){
-        view.visibility = View.GONE
+    when {
+        data!=null -> {
+            view.visibility = View.VISIBLE
+        }
+        data == "00:00" -> {
+            view.visibility = View.GONE
+        }
+        else -> {
+            view.visibility = View.GONE
+        }
     }
 }
 

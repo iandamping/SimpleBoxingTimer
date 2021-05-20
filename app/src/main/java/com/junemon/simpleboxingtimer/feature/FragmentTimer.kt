@@ -108,6 +108,7 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
     private fun FragmentTimerBinding.initView() {
         currentRound = "Round 0 / 0"
         initNumberPicker()
+        getNumberPicker()
         initRadioButton()
         // inflateAdsView()
 
@@ -209,14 +210,12 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
         }
         with(vm) {
             endBellSound()
+            cancelAllTimer()
             setTimmerIsRunning(false)
             setIsRoundTimeRunning(ROUND_TIME_STATE)
             setWarningValue(DEFAULT_INTEGER_VALUE)
         }
 
-        roundTimeValue = DEFAULT_LONG_VALUE
-        restTimeValue = DEFAULT_LONG_VALUE
-        howMuchRoundValue = DEFAULT_INTEGER_VALUE
         howMuchRoundCounter = DEFAULT_INTEGER_VALUE
 
     }
@@ -290,6 +289,22 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
             minValue = DEFAULT_INTEGER_VALUE
             maxValue = listRestTime.size - 1
             displayedValues = listRestTime
+        }
+
+        npRoundTime.apply {
+            minValue = DEFAULT_INTEGER_VALUE
+            maxValue = listRoundTime.size - 1
+            displayedValues = listRoundTime
+        }
+        npWhichRound.apply {
+            minValue = DEFAULT_INTEGER_VALUE
+            maxValue = listWhichRound.size - 1
+            displayedValues = listWhichRound
+        }
+    }
+
+    private fun FragmentTimerBinding.getNumberPicker(){
+        with(npRestTime){
             if (value == DEFAULT_INTEGER_VALUE) {
                 vm.setRestTime(TimerConstant.setCustomTime(0))
             }
@@ -305,22 +320,14 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
                     7 -> vm.setRestTime(TimerConstant.setCustomTime(180))
                 }
             }
-
         }
-
-        npRoundTime.apply {
-            minValue = DEFAULT_INTEGER_VALUE
-            maxValue = listRoundTime.size - 1
-            displayedValues = listRoundTime
+        with(npRoundTime){
             vm.setRoundTime(value)
             setOnValueChangedListener { _, _, newVal ->
                 vm.setRoundTime(newVal)
             }
         }
-        npWhichRound.apply {
-            minValue = DEFAULT_INTEGER_VALUE
-            maxValue = listWhichRound.size - 1
-            displayedValues = listWhichRound
+        with(npWhichRound){
             vm.setWhichRound(value + 1)
             setOnValueChangedListener { _, _, newVal ->
                 vm.setWhichRound(newVal + 1)
