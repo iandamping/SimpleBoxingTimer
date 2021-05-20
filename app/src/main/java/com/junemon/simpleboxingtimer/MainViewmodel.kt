@@ -120,7 +120,7 @@ class MainViewmodel @Inject constructor(@ApplicationContext private val context:
 
     fun startBellSound() {
         viewModelScope.launch {
-            MediaPlayer.create(context, R.raw.end_round_bell).start()
+            MediaPlayer.create(context, R.raw.start_round_bell).start()
         }
     }
 
