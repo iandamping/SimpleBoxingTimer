@@ -1,31 +1,26 @@
 package com.junemon.simpleboxingtimer
 
-import android.content.Context
+import android.app.Application
 import android.media.MediaPlayer
 import android.os.CountDownTimer
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
-import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.junemon.simpleboxingtimer.util.TimerConstant
 import com.junemon.simpleboxingtimer.util.TimerConstant.DONE
 import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
 import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
-import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
 /**
  * Created by Ian Damping on 18,October,2019
  * Github https://github.com/iandamping
  * Indonesia.
  */
-@HiltViewModel
-class MainViewmodel @Inject constructor(@ApplicationContext private val context: Context) :
-    ViewModel() {
+class MainViewmodel(private val applications: Application) : AndroidViewModel(applications) {
     private lateinit var timer: CountDownTimer
 
     private val _isTimerRunning: MutableLiveData<Boolean> = MutableLiveData()
@@ -120,19 +115,19 @@ class MainViewmodel @Inject constructor(@ApplicationContext private val context:
 
     fun startBellSound() {
         viewModelScope.launch {
-            MediaPlayer.create(context, R.raw.start_round_bell).start()
+            MediaPlayer.create(applications.applicationContext, R.raw.start_round_bell).start()
         }
     }
 
     fun endBellSound() {
         viewModelScope.launch {
-            MediaPlayer.create(context, R.raw.end_round_bell).start()
+            MediaPlayer.create(applications.applicationContext, R.raw.end_round_bell).start()
         }
     }
 
     fun warningBellSound() {
         viewModelScope.launch {
-            MediaPlayer.create(context, R.raw.warning_sound).start()
+            MediaPlayer.create(applications.applicationContext, R.raw.warning_sound).start()
         }
     }
 

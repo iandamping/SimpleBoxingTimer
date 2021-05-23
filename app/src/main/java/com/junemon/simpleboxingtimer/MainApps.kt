@@ -1,7 +1,6 @@
 package com.junemon.simpleboxingtimer
 
 import android.app.Application
-import dagger.hilt.android.HiltAndroidApp
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import timber.log.Timber
 
@@ -10,7 +9,6 @@ import timber.log.Timber
  * Github https://github.com/iandamping
  * Indonesia.
  */
-@HiltAndroidApp
 class MainApps : Application() {
 
     @ExperimentalCoroutinesApi

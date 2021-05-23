@@ -2,38 +2,18 @@ package com.junemon.simpleboxingtimer
 
 import android.content.Intent
 import android.os.Bundle
-import android.text.format.DateUtils
-import android.view.View
 import android.view.WindowManager
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.isVisible
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.addRepeatingJob
-import com.google.android.gms.ads.AdRequest
-import com.google.android.gms.ads.MobileAds
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.junemon.simpleboxingtimer.databinding.ActivityMainBinding
 import com.junemon.simpleboxingtimer.feature.FragmentTimer
-import com.junemon.simpleboxingtimer.util.GenericPair
 import com.junemon.simpleboxingtimer.util.TimerConstant.FLAGS_FULLSCREEN
 import com.junemon.simpleboxingtimer.util.TimerConstant.IMMERSIVE_FLAG_TIMEOUT
 import com.junemon.simpleboxingtimer.util.TimerConstant.MY_REQUEST_CODE
-import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
-import com.junemon.simpleboxingtimer.util.TimerConstant.REST_TIME_STATE
-import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
-import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomMinutes
-import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomTime
-import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
 import timber.log.Timber
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
@@ -44,7 +24,6 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupCounter()
-
     }
 
     override fun onResume() {

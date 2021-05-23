@@ -24,7 +24,6 @@ import com.junemon.simpleboxingtimer.util.TimerConstant.REST_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
 import com.junemon.simpleboxingtimer.util.clicks
 import com.junemon.simpleboxingtimer.util.startActivity
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
@@ -35,7 +34,6 @@ import timber.log.Timber
  * Github https://github.com/iandamping
  * Indonesia.
  */
-@AndroidEntryPoint
 class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
 
     private val vm: MainViewmodel by viewModels()
@@ -50,7 +48,6 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
     private var howMuchRoundCounter: Int = DEFAULT_INTEGER_VALUE
     private var pausedTimeValue: Int = DEFAULT_INTEGER_VALUE
     private var roundState: Int = DEFAULT_INTEGER_VALUE
-
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentTimerBinding
         get() = FragmentTimerBinding::inflate
@@ -112,7 +109,7 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
         initRadioButton()
         // inflateAdsView()
 
-        clicks(btnReset){
+        clicks(btnReset) {
             resettingAll()
         }
 
@@ -217,7 +214,6 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
         }
 
         howMuchRoundCounter = DEFAULT_INTEGER_VALUE
-
     }
 
     private fun startingTimerForRoundOnly() {
@@ -303,8 +299,8 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
         }
     }
 
-    private fun FragmentTimerBinding.getNumberPicker(){
-        with(npRestTime){
+    private fun FragmentTimerBinding.getNumberPicker() {
+        with(npRestTime) {
             if (value == DEFAULT_INTEGER_VALUE) {
                 vm.setRestTime(TimerConstant.setCustomTime(0))
             }
@@ -321,13 +317,13 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
                 }
             }
         }
-        with(npRoundTime){
+        with(npRoundTime) {
             vm.setRoundTime(value)
             setOnValueChangedListener { _, _, newVal ->
                 vm.setRoundTime(newVal)
             }
         }
-        with(npWhichRound){
+        with(npWhichRound) {
             vm.setWhichRound(value + 1)
             setOnValueChangedListener { _, _, newVal ->
                 vm.setWhichRound(newVal + 1)
@@ -352,6 +348,4 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
         val request = AdRequest.Builder().build()
         detailAdView.loadAd(request)
     }
-
-
 }
