@@ -106,7 +106,7 @@ class MainViewmodel(private val context:Context) : ViewModel() {
 
     fun startBellSound() {
         viewModelScope.launch {
-            MediaPlayer.create(context, R.raw.end_round_bell).start()
+            MediaPlayer.create(context, R.raw.start_round_bell).start()
         }
     }
 
