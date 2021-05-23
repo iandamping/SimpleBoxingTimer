@@ -107,7 +107,7 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
         initNumberPicker()
         getNumberPicker()
         initRadioButton()
-        // inflateAdsView()
+        inflateAdsView()
 
         clicks(btnReset) {
             resettingAll()
