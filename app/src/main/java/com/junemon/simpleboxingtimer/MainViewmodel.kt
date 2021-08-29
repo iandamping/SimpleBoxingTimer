@@ -1,21 +1,17 @@
 package com.junemon.simpleboxingtimer
 
-import android.content.Context
-import android.media.MediaPlayer
-import android.os.CountDownTimer
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.junemon.simpleboxingtimer.util.TimerConstant
 import com.junemon.simpleboxingtimer.util.TimerConstant.DONE
 import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
 import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
+import com.junemon.simpleboxingtimer.util.ringer.BellRinger
+import com.junemon.simpleboxingtimer.util.timer.BoxingTimer
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
@@ -24,9 +20,11 @@ import javax.inject.Inject
  * Indonesia.
  */
 @HiltViewModel
-class MainViewmodel @Inject constructor(@ApplicationContext private val context: Context) :
+class MainViewmodel @Inject constructor(
+    private val bellRinger: BellRinger,
+    private val boxingTimer: BoxingTimer
+) :
     ViewModel() {
-    private lateinit var timer: CountDownTimer
 
     private val _isTimerRunning: MutableLiveData<Boolean> = MutableLiveData()
     private val _restTimeValue: MutableLiveData<Long> = MutableLiveData()
@@ -62,24 +60,19 @@ class MainViewmodel @Inject constructor(@ApplicationContext private val context:
         get() = _whichRoundValue
 
     fun startTimer(durationTime: Long, finishTicking: () -> Unit) {
-        timer = object : CountDownTimer(durationTime, ONE_SECOND) {
-            override fun onFinish() {
-                _currentTime.value = DONE
-                _pausedTime.value = DONE
-                finishTicking.invoke()
-            }
-
-            override fun onTick(millisUntilFinished: Long) {
-                _currentTime.value = (millisUntilFinished / ONE_SECOND)
-                _pausedTime.value = (millisUntilFinished / ONE_SECOND)
-            }
-        }.start()
+        boxingTimer.startTimer(durationTime = durationTime,
+            onFinish = {
+            _currentTime.value = DONE
+            _pausedTime.value = DONE
+            finishTicking.invoke()
+        }, onTicking = { millisUntilFinished ->
+            _currentTime.value = (millisUntilFinished / ONE_SECOND)
+            _pausedTime.value = (millisUntilFinished / ONE_SECOND)
+        })
     }
 
     fun cancelAllTimer() {
-        if (::timer.isInitialized) {
-            timer.cancel()
-        }
+        boxingTimer.stopTimer()
     }
 
     fun setRestTime(data: Long) {
@@ -119,21 +112,15 @@ class MainViewmodel @Inject constructor(@ApplicationContext private val context:
     }
 
     fun startBellSound() {
-        viewModelScope.launch {
-            MediaPlayer.create(context, R.raw.start_round_bell).start()
-        }
+        bellRinger.startBellSound()
     }
 
     fun endBellSound() {
-        viewModelScope.launch {
-            MediaPlayer.create(context, R.raw.end_round_bell).start()
-        }
+        bellRinger.endBellSound()
     }
 
     fun warningBellSound() {
-        viewModelScope.launch {
-            MediaPlayer.create(context, R.raw.warning_sound).start()
-        }
+        bellRinger.warningBellSound()
     }
 
     override fun onCleared() {

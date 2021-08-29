@@ -8,6 +8,7 @@ import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.addRepeatingJob
+import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.junemon.simpleboxingtimer.MainActivity
@@ -241,7 +242,7 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
     }
 
     private fun observeTimer() {
-        viewLifecycleOwner.addRepeatingJob(Lifecycle.State.STARTED) {
+        viewLifecycleOwner.lifecycleScope.launchWhenStarted {
             vm.roundTimeState.combine(vm.currentTime) { state, timeTicking ->
                 GenericPair(state, timeTicking)
             }.onEach {
