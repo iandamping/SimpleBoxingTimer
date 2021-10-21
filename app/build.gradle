@@ -69,7 +69,6 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-runtime-ktx:$livedata_version"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:$livedata_version"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:$livedata_version"
-    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-alpha01"
     //hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
