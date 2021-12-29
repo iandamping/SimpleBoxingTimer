@@ -13,7 +13,6 @@ import timber.log.Timber
 @HiltAndroidApp
 class MainApps : Application() {
 
-    @ExperimentalCoroutinesApi
     override fun onCreate() {
         super.onCreate()
         if (BuildConfig.DEBUG) {

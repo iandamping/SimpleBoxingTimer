@@ -67,17 +67,13 @@ fun Fragment.clicks(
 
 }
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 private fun View.clickListener(): Flow<Unit> = callbackFlow {
     setOnClickListener {
-        offer(Unit)
+        trySend(Unit).isSuccess
     }
     awaitClose { this@clickListener.setOnClickListener(null) }
 }
 
-@FlowPreview
-@ExperimentalCoroutinesApi
 fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> = flow {
     var lastEmissionTime = 0L
     collect { upstream ->

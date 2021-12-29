@@ -2,6 +2,7 @@ package com.junemon.simpleboxingtimer
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.Window
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
@@ -21,8 +22,9 @@ class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        fullScreenAnimation()
         checkUpdate()
-        window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setupCounter()
@@ -66,6 +68,19 @@ class MainActivity : AppCompatActivity() {
                 )
             }
         }
+    }
+
+    private fun fullScreenAnimation() {
+        with(this) {
+            overridePendingTransition(R.anim.fade_in_activity, R.anim.fade_out_activity)
+            requestWindowFeature(Window.FEATURE_NO_TITLE)
+            window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
+            window.setFlags(
+                WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN
+            )
+        }
+
     }
 }
 
