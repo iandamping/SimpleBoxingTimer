@@ -5,6 +5,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
@@ -25,8 +26,6 @@ abstract class BaseFragment<out VB : ViewDataBinding> : Fragment() {
 
     abstract fun viewCreated()
 
-    abstract fun activityCreated()
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -39,7 +38,6 @@ abstract class BaseFragment<out VB : ViewDataBinding> : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         viewCreated()
-        activityCreated()
     }
 
     override fun onDestroyView() {

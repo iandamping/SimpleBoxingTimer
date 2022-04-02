@@ -7,7 +7,11 @@ import android.os.Bundle
 import android.view.View
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.channels.awaitClose
@@ -17,6 +21,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.launch
 
 /**
  * Created by Ian Damping on 25,October,2020
@@ -45,7 +50,9 @@ inline fun <reified T : Activity> Context.startActivity(
 
 inline fun <reified T : Any> newIntent(ctx: Context): Intent = Intent(ctx, T::class.java)
 
-data class GenericPair<A, B>(val data1: A, val data2: B)
+data class GenericPair<out A, out B>(val data1: A, val data2: B)
+
+data class GenericTriple<out A, out B, out C>(val data1: A, val data2: B, val data3:C)
 
 
 
@@ -82,6 +89,18 @@ fun <T> Flow<T>.throttleFirst(windowDuration: Long): Flow<T> = flow {
         if (mayEmit) {
             lastEmissionTime = currentTime
             emit(upstream)
+        }
+    }
+}
+
+inline fun <T> Flow<T>.launchAndCollectIn(
+    owner: LifecycleOwner,
+    minActiveState: Lifecycle.State = Lifecycle.State.STARTED,
+    crossinline action: suspend CoroutineScope.(T) -> Unit
+) = owner.lifecycleScope.launch {
+    owner.repeatOnLifecycle(minActiveState) {
+        collect {
+            action(it)
         }
     }
 }

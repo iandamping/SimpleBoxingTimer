@@ -1,8 +1,8 @@
 package com.junemon.simpleboxingtimer.util
 
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
+import android.widget.*
+import androidx.core.view.isVisible
 import androidx.databinding.BindingAdapter
 import com.junemon.simpleboxingtimer.R
 
@@ -11,21 +11,59 @@ import com.junemon.simpleboxingtimer.R
  * Github https://github.com/iandamping
  * Indonesia.
  */
+@BindingAdapter("bindingButtonStopViewHelper")
+fun setButtonStopHelper(view:Button, isRunning: Boolean){
+    if (!isRunning){
+        if (view.isVisible) {
+            view.visibility = View.GONE
+        }
+    } else view.visibility = View.VISIBLE
+}
 
-@BindingAdapter("bindingTimerHelper")
-fun setTimerHelper(view:TextView, data:String?){
-    when {
-        data!=null -> {
-            view.visibility = View.VISIBLE
-        }
-        data == "00:00" -> {
-            view.visibility = View.GONE
-        }
-        else -> {
-            view.visibility = View.GONE
-        }
+@BindingAdapter("bindingButtonStartViewHelper")
+fun setButtonStartHelper(view:Button, isRunning: Boolean){
+    if (!isRunning){
+        view.visibility = View.VISIBLE
+    } else if (view.isVisible) {
+        view.visibility = View.GONE
     }
 }
+
+@BindingAdapter("bindingTimerHelper")
+fun setTimerHelper(view:TextView, isRunning: Boolean){
+    if (isRunning){
+        view.visibility = View.VISIBLE
+    } else view.visibility = View.GONE
+}
+
+@BindingAdapter("bindingLinearlayoutVisibiltyHelper")
+fun setLinearlayoutVisibilityHelper(view:LinearLayout, isRunning: Boolean){
+    if (isRunning){
+        view.visibility = View.GONE
+    } else view.visibility = View.VISIBLE
+}
+
+@BindingAdapter("bindingRadioButtonHelper")
+fun setRadioButtonHelper(view:RadioButton, isRunning: Boolean){
+    view.isEnabled = !isRunning
+}
+
+@BindingAdapter("bindingRadioGroupHelper")
+fun setRadioButtonHelper(view:RadioGroup, isRunning: Boolean){
+   if (!isRunning){
+       view.clearCheck()
+       view.check(R.id.radioOff)
+   }
+}
+
+@BindingAdapter("bindingNumberPickerResetterHelper")
+fun setResetNumberPickerHelper(view:NumberPicker, isRunning: Boolean){
+    if (!isRunning){
+        view.value = 0
+    }
+}
+
+
 
 @BindingAdapter("handleBackgroundHelper")
 fun handleBackground(view:LinearLayout, restState:Boolean){

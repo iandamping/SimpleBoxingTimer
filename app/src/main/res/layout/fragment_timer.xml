@@ -5,19 +5,12 @@
 
     <data>
 
+        <variable
+            name="mainViewModel"
+            type="com.junemon.simpleboxingtimer.MainViewmodel" />
+
         <import type="android.view.View" />
-
-        <variable
-            name="isRest"
-            type="Boolean" />
-
-        <variable
-            name="timerSet"
-            type="String" />
-
-        <variable
-            name="currentRound"
-            type="String" />
+        <import type="android.text.TextUtils"/>
 
     </data>
 
@@ -34,10 +27,9 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:layout_margin="16dp"
-            android:text="@{currentRound}"
+            android:text="@{@string/current_round(mainViewModel.roundCounter, mainViewModel.whichRoundValue)}"
             android:textColor="@color/white"
             android:textSize="22sp"
-            android:visibility="@{currentRound != null ? View.VISIBLE : View.GONE}"
             tools:text="Round 1 / 2" />
 
         <LinearLayout
@@ -46,7 +38,7 @@
             android:layout_margin="8dp"
             android:orientation="horizontal"
             android:padding="16dp"
-            app:handleBackgroundHelper="@{isRest}">
+            app:handleBackgroundHelper="@{mainViewModel.isResting()}">
 
             <TextView
                 android:layout_width="match_parent"
@@ -54,30 +46,31 @@
                 android:layout_gravity="center"
                 android:fontFamily="@font/calculator"
                 android:gravity="center"
-                android:text="@{timerSet}"
+                android:text="@{mainViewModel.clockTicking}"
                 android:textSize="165sp"
                 android:textStyle="bold"
-                app:bindingTimerHelper="@{timerSet}"
+                app:bindingTimerHelper="@{mainViewModel.isTimerRunning}"
                 tools:text="10:00" />
 
             <LinearLayout
                 android:layout_width="0dp"
+                app:bindingLinearlayoutVisibiltyHelper="@{mainViewModel.isTimerRunning}"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/lato"
-                    android:text="Rest"
+                    android:text="@string/rest"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <NumberPicker
                     android:id="@+id/npRestTime"
+                    app:bindingNumberPickerResetterHelper="@{mainViewModel.isTimerRunning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -85,22 +78,23 @@
 
             <LinearLayout
                 android:layout_width="0dp"
+                app:bindingLinearlayoutVisibiltyHelper="@{mainViewModel.isTimerRunning}"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:fontFamily="@font/lato"
-                    android:text="Round Time"
+                    android:text="@string/round_time"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <NumberPicker
                     android:id="@+id/npRoundTime"
+                    app:bindingNumberPickerResetterHelper="@{mainViewModel.isTimerRunning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -108,21 +102,22 @@
 
             <LinearLayout
                 android:layout_width="0dp"
+                app:bindingLinearlayoutVisibiltyHelper="@{mainViewModel.isTimerRunning}"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
                 android:gravity="center"
-                android:orientation="vertical"
-                android:visibility="@{timerSet == null || timerSet.equals(`00:00`) ? View.VISIBLE : View.GONE}">
+                android:orientation="vertical">
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Rounds"
+                    android:text="@string/rounds"
                     android:textSize="18sp"
                     android:textStyle="bold" />
 
                 <NumberPicker
                     android:id="@+id/npWhichRound"
+                    app:bindingNumberPickerResetterHelper="@{mainViewModel.isTimerRunning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
@@ -143,10 +138,11 @@
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:fontFamily="@font/lato"
-                android:text="WARNING"
+                android:text="@string/warning"
                 android:textColor="@android:color/white" />
 
             <RadioGroup
+                app:bindingRadioGroupHelper="@{mainViewModel.isTimerRunning}"
                 android:id="@+id/radioGroupRoot"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -154,25 +150,28 @@
                 android:orientation="horizontal">
 
                 <RadioButton
+                    app:bindingRadioButtonHelper="@{mainViewModel.isTimerRunning}"
                     android:id="@+id/radioOff"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:checked="true"
-                    android:text="OFF"
+                    android:text="@string/off"
                     android:textColor="@android:color/white" />
 
                 <RadioButton
                     android:id="@+id/radioTenSec"
+                    app:bindingRadioButtonHelper="@{mainViewModel.isTimerRunning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="10 SEC"
+                    android:text="@string/ten_second"
                     android:textColor="@android:color/white" />
 
                 <RadioButton
                     android:id="@+id/radioThirtySec"
+                    app:bindingRadioButtonHelper="@{mainViewModel.isTimerRunning}"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="30 SEC"
+                    android:text="@string/thirty_sec"
                     android:textColor="@android:color/white" />
 
             </RadioGroup>
@@ -184,22 +183,24 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center"
             android:gravity="center"
-            android:text="Reset" />
+            android:text="@string/reset" />
 
         <Button
             android:id="@+id/btnStart"
+            app:bindingButtonStartViewHelper="@{mainViewModel.isTimerRunning}"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="START" />
+            android:text="@string/start" />
 
         <Button
             android:id="@+id/btnStop"
+            app:bindingButtonStopViewHelper="@{mainViewModel.isTimerRunning}"
             android:visibility="gone"
             android:layout_width="200dp"
             android:layout_height="wrap_content"
             android:layout_gravity="center"
-            android:text="STOP" />
+            android:text="@string/stop" />
 
         <com.google.android.gms.ads.AdView xmlns:ads="http://schemas.android.com/apk/res-auto"
             android:id="@+id/detailAdView"

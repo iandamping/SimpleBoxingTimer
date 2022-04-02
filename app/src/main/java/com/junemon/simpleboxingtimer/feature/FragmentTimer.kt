@@ -1,36 +1,20 @@
 package com.junemon.simpleboxingtimer.feature
 
-import android.text.format.DateUtils
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.core.view.isVisible
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.lifecycleScope
-import androidx.lifecycle.repeatOnLifecycle
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
-import com.junemon.simpleboxingtimer.MainActivity
 import com.junemon.simpleboxingtimer.MainViewmodel
 import com.junemon.simpleboxingtimer.R
 import com.junemon.simpleboxingtimer.base.BaseFragment
 import com.junemon.simpleboxingtimer.databinding.FragmentTimerBinding
-import com.junemon.simpleboxingtimer.util.GenericPair
 import com.junemon.simpleboxingtimer.util.TimerConstant
 import com.junemon.simpleboxingtimer.util.TimerConstant.DEFAULT_INTEGER_VALUE
-import com.junemon.simpleboxingtimer.util.TimerConstant.DEFAULT_LONG_VALUE
-import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
-import com.junemon.simpleboxingtimer.util.TimerConstant.REST_TIME_STATE
-import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
 import com.junemon.simpleboxingtimer.util.clicks
-import com.junemon.simpleboxingtimer.util.startActivity
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.launchIn
-import kotlinx.coroutines.flow.onEach
-import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -46,85 +30,31 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
     private val listRestTime by lazy { resources.getStringArray(R.array.rest_time) }
     private val listRoundTime by lazy { resources.getStringArray(R.array.round_time) }
     private val listWhichRound by lazy { resources.getStringArray(R.array.which_round) }
-    private var warningValue: Int? = null
-    private var roundTimeValue: Long = DEFAULT_LONG_VALUE
-    private var restTimeValue: Long = DEFAULT_LONG_VALUE
-    private var howMuchRoundValue: Int = DEFAULT_INTEGER_VALUE
-    private var howMuchRoundCounter: Int = DEFAULT_INTEGER_VALUE
-    private var pausedTimeValue: Int = DEFAULT_INTEGER_VALUE
-    private var roundState: Int = DEFAULT_INTEGER_VALUE
-
 
     override val bindingInflater: (LayoutInflater, ViewGroup?, Boolean) -> FragmentTimerBinding
         get() = FragmentTimerBinding::inflate
 
     override fun viewCreated() {
-        binding.initView()
+        binding.apply {
+            lifecycleOwner = this@FragmentTimer.viewLifecycleOwner
+            mainViewModel = vm
+        }.initView()
     }
 
-    override fun activityCreated() {
-        observeIsTimmerRunning()
-        observeRoundTimeValue()
-        observeRestTimeValue()
-        observeWhichRoundValue()
-        observeWarningValue()
-        observeTimer()
-        observePausedTime()
-    }
 
-    private fun observeIsTimmerRunning() {
-        vm.isTimerRunning.observe(viewLifecycleOwner) {
-            binding.disableView(it)
-        }
-    }
-
-    private fun observeRestTimeValue() {
-        vm.restTimeValue.observe(viewLifecycleOwner) { restTimeResult ->
-            restTimeValue = restTimeResult
-        }
-    }
-
-    private fun observeRoundTimeValue() {
-        vm.roundTimeValue.observe(viewLifecycleOwner) { roundTimeResult ->
-            roundTimeValue = roundTimeResult
-        }
-    }
-
-    private fun observeWhichRoundValue() {
-        vm.whichRoundValue.observe(viewLifecycleOwner) { roundValueResult ->
-            howMuchRoundValue = roundValueResult
-        }
-    }
-
-    private fun observeWarningValue() {
-        vm.warningValue.observe(viewLifecycleOwner) {
-            warningValue = it
-        }
-    }
-
-    private fun observePausedTime() {
-        vm.pausedTime.observe(viewLifecycleOwner) { timeTicking ->
-            pausedTimeValue = timeTicking.toInt()
-        }
-    }
 
     private fun FragmentTimerBinding.initView() {
-        currentRound = "Round 0 / 0"
         initNumberPicker()
         getNumberPicker()
         initRadioButton()
-//        inflateAdsView()
+        inflateAdsView()
 
-        clicks(btnReset){
-            resettingAll()
+        clicks(btnReset) {
+            vm.resetAll()
         }
 
         clicks(btnStart) {
-            startTimer()
-            if (btnStart.isVisible) {
-                btnStart.visibility = View.GONE
-                btnStop.visibility = View.VISIBLE
-            }
+            vm.startCounting()
         }
         clicks(btnStop) {
             vm.cancelAllTimer()
@@ -133,171 +63,6 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
                 btnStart.visibility = View.VISIBLE
             }
         }
-    }
-
-    private fun resettingAll() {
-        with(binding) {
-            currentRound = "Round 0 / 0"
-            timerSet = null
-            isRest = false
-            radioGroupRoot.clearCheck()
-            radioGroupRoot.check(R.id.radioOff)
-            if (btnStop.isVisible) {
-                btnStop.visibility = View.GONE
-                btnStart.visibility = View.VISIBLE
-            }
-        }
-        with(vm) {
-            cancelAllTimer()
-            setTimmerIsRunning(false)
-            setIsRoundTimeRunning(ROUND_TIME_STATE)
-            setWarningValue(DEFAULT_INTEGER_VALUE)
-        }
-        pausedTimeValue = DEFAULT_INTEGER_VALUE
-        howMuchRoundCounter = DEFAULT_INTEGER_VALUE
-    }
-
-    private fun startTimer() {
-        if (howMuchRoundCounter == 0) {
-            binding.currentRound = "Round 1 / $howMuchRoundValue"
-        }
-        with(vm) {
-            setTimmerIsRunning(true)
-            when (roundState) {
-                ROUND_TIME_STATE -> {
-                    if (pausedTimeValue != DEFAULT_INTEGER_VALUE) {
-                        vm.startTimer(pausedTimeValue * ONE_SECOND) {
-                            howMuchRoundCounter++
-                            pausedTimeValue = DEFAULT_INTEGER_VALUE
-                            when {
-                                howMuchRoundCounter < howMuchRoundValue -> {
-                                    startingTimerForRoundOnly()
-                                }
-                                else -> {
-                                    finishedTimer()
-                                }
-                            }
-                        }
-                    } else {
-                        startBellSound()
-                        vm.startTimer(this@FragmentTimer.roundTimeValue) {
-                            howMuchRoundCounter++
-                            when {
-                                howMuchRoundCounter < howMuchRoundValue -> {
-                                    startingTimerForRoundOnly()
-                                }
-                                else -> {
-                                    finishedTimer()
-                                }
-                            }
-                        }
-                    }
-                }
-                REST_TIME_STATE -> {
-                    if (pausedTimeValue != DEFAULT_INTEGER_VALUE) {
-                        vm.startTimer(pausedTimeValue * ONE_SECOND) {
-                            pausedTimeValue = DEFAULT_INTEGER_VALUE
-                            startingTimerForRestOnly()
-                        }
-                    } else {
-                        vm.startTimer(this@FragmentTimer.restTimeValue) {
-                            startingTimerForRestOnly()
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    private fun finishedTimer() {
-        with(binding) {
-            currentRound = "Round 0 / 0"
-            timerSet = null
-            isRest = false
-            radioGroupRoot.clearCheck()
-            radioGroupRoot.check(R.id.radioOff)
-            if (btnStop.isVisible) {
-                btnStop.visibility = View.GONE
-                btnStart.visibility = View.VISIBLE
-            }
-        }
-        with(vm) {
-            endBellSound()
-            cancelAllTimer()
-            setTimmerIsRunning(false)
-            setIsRoundTimeRunning(ROUND_TIME_STATE)
-            setWarningValue(DEFAULT_INTEGER_VALUE)
-        }
-
-        howMuchRoundCounter = DEFAULT_INTEGER_VALUE
-
-    }
-
-    private fun startingTimerForRoundOnly() {
-        if (restTimeValue == DEFAULT_LONG_VALUE) {
-            binding.currentRound = "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
-            vm.setIsRoundTimeRunning(ROUND_TIME_STATE)
-            startTimer()
-        } else {
-            with(vm) {
-                endBellSound()
-                setIsRoundTimeRunning(REST_TIME_STATE)
-            }
-            startTimer()
-        }
-    }
-
-    private fun startingTimerForRestOnly() {
-        binding.currentRound = "Round ${howMuchRoundCounter + 1} / $howMuchRoundValue"
-        vm.setIsRoundTimeRunning(ROUND_TIME_STATE)
-        startTimer()
-    }
-
-    private fun observeTimer() {
-        viewLifecycleOwner.lifecycleScope.launch {
-            lifecycle.repeatOnLifecycle(Lifecycle.State.STARTED){
-                vm.roundTimeState.combine(vm.currentTime) { state, timeTicking ->
-                    GenericPair(state, timeTicking)
-                }.collect {
-                    roundState = it.data1
-
-                    when (it.data1) {
-                        ROUND_TIME_STATE -> {
-                            it.data2?.let { timeTicking ->
-                                val value = DateUtils.formatElapsedTime(timeTicking)
-                                if (warningValue != null) {
-                                    if (value == "00:$warningValue") {
-                                        vm.warningBellSound()
-                                    }
-                                }
-                                with(binding) {
-                                    isRest = false
-                                    timerSet = value
-                                }
-                            }
-                        }
-                        REST_TIME_STATE -> {
-                            it.data2?.let { timeTicking ->
-                                val value = DateUtils.formatElapsedTime(timeTicking)
-                                if (value != "00:00") {
-                                    with(binding) {
-                                        isRest = true
-                                        timerSet = value
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-
-        }
-    }
-
-    private fun FragmentTimerBinding.disableView(isRunning: Boolean) {
-        radioOff.isEnabled = !isRunning
-        radioTenSec.isEnabled = !isRunning
-        radioThirtySec.isEnabled = !isRunning
     }
 
     private fun FragmentTimerBinding.initNumberPicker() {
@@ -319,8 +84,8 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
         }
     }
 
-    private fun FragmentTimerBinding.getNumberPicker(){
-        with(npRestTime){
+    private fun FragmentTimerBinding.getNumberPicker() {
+        with(npRestTime) {
             if (value == DEFAULT_INTEGER_VALUE) {
                 vm.setRestTime(TimerConstant.setCustomTime(0))
             }
@@ -337,13 +102,15 @@ class FragmentTimer : BaseFragment<FragmentTimerBinding>() {
                 }
             }
         }
-        with(npRoundTime){
+
+        with(npRoundTime) {
             vm.setRoundTime(value)
             setOnValueChangedListener { _, _, newVal ->
                 vm.setRoundTime(newVal)
             }
         }
-        with(npWhichRound){
+
+        with(npWhichRound) {
             vm.setWhichRound(value + 1)
             setOnValueChangedListener { _, _, newVal ->
                 vm.setWhichRound(newVal + 1)

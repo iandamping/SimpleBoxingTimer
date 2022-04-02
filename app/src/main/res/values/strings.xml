@@ -6,6 +6,17 @@
     <string name="bannerAdmobUnitIDTestAd">ca-app-pub-3940256099942544/6300978111</string>
     <string name="interstitialAdmobUnitIDTestAd">ca-app-pub-3940256099942544/1033173712</string>
     <string name="mobileTestDeviceId">C340C54945DE79A1BC801918665E1C66</string>
+    <string name="current_round">Round %d / %d</string>
+    <string name="rounds">Rounds</string>
+    <string name="warning">WARNING</string>
+    <string name="off">OFF</string>
+    <string name="ten_second">10 SEC</string>
+    <string name="thirty_sec">30 SEC</string>
+    <string name="reset">Reset</string>
+    <string name="start">START</string>
+    <string name="stop">STOP</string>
+    <string name="rest">Rest</string>
+    <string name="round_time">Round Time</string>
     <string-array name="rest_time">
         <item>0 sec</item>
         <item>15 sec</item>

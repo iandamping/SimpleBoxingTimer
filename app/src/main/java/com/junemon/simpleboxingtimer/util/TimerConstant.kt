@@ -13,6 +13,8 @@ object TimerConstant {
     const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
     const val DEFAULT_INTEGER_VALUE = 0
+    const val DEFAULT_ROUND_COUNTER_VALUE = 1
+    const val DEFAULT_WHICH_ROUND_COUNTER_VALUE = 1
     const val DEFAULT_LONG_VALUE = 0L
     const val ROUND_TIME_STATE = 0
     const val REST_TIME_STATE = 1

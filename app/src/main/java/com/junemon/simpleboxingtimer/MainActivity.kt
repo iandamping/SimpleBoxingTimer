@@ -23,7 +23,7 @@ class MainActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         fullScreenAnimation()
-        checkUpdate()
+//        checkUpdate()
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

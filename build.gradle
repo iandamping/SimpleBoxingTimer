@@ -3,7 +3,7 @@
 buildscript {
     ext {
         kotlin_version = '1.6.0'
-        livedata_version = '2.4.0'
+        livedata_version = '2.4.1'
         coroutine_version = '1.6.0'
         commonhelper_version = '0.0.15-alpha02'
         recyclerhelper_version = '0.0.5-alpha04c'
