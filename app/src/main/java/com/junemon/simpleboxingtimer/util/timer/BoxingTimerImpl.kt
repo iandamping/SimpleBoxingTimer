@@ -26,7 +26,7 @@ class BoxingTimerImpl @Inject constructor() : BoxingTimer {
     }
 
     override fun stopTimer() {
-        if(timer != null){
+        if (timer !=null){
             timer?.cancel()
             timer = null
         }
