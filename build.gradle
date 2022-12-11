@@ -1,4 +1,10 @@
-// Top-level build file where you can add configuration options common to all sub-projects/modules.
+ext {
+    var = '123456'
+    var1 = 'C:\\Users\\SPE-JOGJA-Ian\\Documents\\!!SIMPLE-BOXING-TIMER\\jks\\simpleboxing.jks'
+    var2 = '123456'
+    var3 = 'key0'
+    var4 = '123456'
+}// Top-level build file where you can add configuration options common to all sub-projects/modules.
 
 buildscript {
     ext {

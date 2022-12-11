@@ -101,7 +101,7 @@ fun BoxingTimerScreen(modifier: Modifier = Modifier, timerVm: BoxingTimerViewMod
         }, factory = { context ->
             AdView(context).apply {
                 setAdSize(AdSize.BANNER)
-                adUnitId = context.getString(R.string.bannerAdmobUnitIDTestAd)
+                adUnitId = context.getString(R.string.admob_unit_id_banner)
                 loadAd(AdRequest.Builder().build())
             }
         })

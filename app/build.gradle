@@ -7,6 +7,14 @@ plugins {
 }
 
 android {
+    signingConfigs {
+        release {
+            storeFile file(var1)
+            storePassword var2
+            keyAlias var3
+            keyPassword var4
+        }
+    }
     compileSdkVersion 33
 
     defaultConfig {
@@ -18,16 +26,22 @@ android {
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         multiDexEnabled true
+        signingConfig signingConfigs.debug
     }
+
     buildTypes {
         debug {
             minifyEnabled false
             shrinkResources false
+            resValue 'string', 'admob_unit_id_banner' , '"ca-app-pub-3940256099942544/6300978111"'
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+
         }
         release {
             minifyEnabled true
             shrinkResources true
+            resValue 'string', 'admob_unit_id_banner' , '"ca-app-pub-5657961827660648/3758372293"'
+            signingConfig signingConfigs.release
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
