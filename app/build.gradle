@@ -21,8 +21,8 @@ android {
         applicationId "com.junemon.simpleboxingtimer"
         minSdkVersion 21
         targetSdkVersion 33
-        versionCode 12
-        versionName "1.2.0"
+        versionCode 13
+        versionName "1.3.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         multiDexEnabled true
