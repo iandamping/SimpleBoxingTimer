@@ -1,6 +1,7 @@
 package com.junemon.simpleboxingtimer
 
 import android.app.Application
+import androidx.multidex.BuildConfig
 import com.junemon.simpleboxingtimer.di.injectData
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import org.koin.android.ext.koin.androidContext

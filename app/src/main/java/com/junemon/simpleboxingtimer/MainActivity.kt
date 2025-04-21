@@ -1,16 +1,20 @@
 package com.junemon.simpleboxingtimer
 
-import android.content.Intent
 import android.os.Bundle
 import android.text.format.DateUtils
 import android.view.View
 import android.view.WindowManager
+import androidx.activity.result.ActivityResult
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.IntentSenderRequest
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
 import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.MobileAds
 import com.google.android.play.core.appupdate.AppUpdateManagerFactory
+import com.google.android.play.core.appupdate.AppUpdateOptions
 import com.google.android.play.core.install.model.AppUpdateType
 import com.google.android.play.core.install.model.UpdateAvailability
 import com.junemon.simpleboxingtimer.databinding.ActivityMainBinding
@@ -22,18 +26,16 @@ import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomMinutes
 import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomTime
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
+import org.koin.android.ext.android.inject
 import timber.log.Timber
-import org.koin.androidx.scope.lifecycleScope as koinLifecycleScope
-private const val MY_REQUEST_CODE: Int = 0
 private const val IMMERSIVE_FLAG_TIMEOUT = 500L
 
 @ExperimentalCoroutinesApi
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
-    private val vm: MainViewmodel by koinLifecycleScope.inject()
+    private val vm: MainViewmodel by inject()
     private val listRestTime by lazy { resources.getStringArray(R.array.rest_time) }
     private val listRoundTime by lazy { resources.getStringArray(R.array.round_time) }
     private val listWhichRound by lazy { resources.getStringArray(R.array.which_round) }
@@ -44,10 +46,13 @@ class MainActivity : AppCompatActivity() {
     private var howMuchRoundCounter: Int = 0
     private var pausedTimeValue: Int = 0
     private var roundState: Int = 0
+    private lateinit var forceUpdatePermissionLauncher: ActivityResultLauncher<IntentSenderRequest>
+    private val updateManager by lazy { AppUpdateManagerFactory.create(this) }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        checkUpdate()
+        inAppForceUpdateVersion()
+        forceUpdateCallback()
         window.addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -68,23 +73,12 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
+        forceUpdateCheck()
         // Before setting full screen flags, we must wait a bit to let UI settle; otherwise, we may
         // be trying to set app to immersive mode before it's ready and the flags do not stick
         binding.root.postDelayed({
             binding.root.systemUiVisibility = FLAGS_FULLSCREEN
         }, IMMERSIVE_FLAG_TIMEOUT)
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == MY_REQUEST_CODE) {
-            if (resultCode != RESULT_OK) {
-                Timber.e("Update flow failed! Result code: $resultCode")
-                // If the update is cancelled or fails,
-                // you can request to start the update again.
-                checkUpdate()
-            }
-        }
     }
 
     private fun observeIsTimmerRunning() {
@@ -379,17 +373,46 @@ class MainActivity : AppCompatActivity() {
         detailAdView.loadAd(request)
     }
 
-    private fun checkUpdate() {
-        val updateManager = AppUpdateManagerFactory.create(this)
+    private fun forceUpdateCallback() {
+        forceUpdatePermissionLauncher =
+            registerForActivityResult(ActivityResultContracts.StartIntentSenderForResult()) { result: ActivityResult ->
+                if (result.resultCode != RESULT_OK) {
+                    inAppForceUpdateVersion()
+                }
+            }
+    }
+
+    private fun inAppForceUpdateVersion() {
         val appUpdateInfoTask = updateManager.appUpdateInfo
         appUpdateInfoTask.addOnSuccessListener { appUpdateInfo ->
-            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE) {
+            if (appUpdateInfo.updateAvailability() == UpdateAvailability.UPDATE_AVAILABLE && appUpdateInfo.isUpdateTypeAllowed(
+                    AppUpdateType.IMMEDIATE
+                )
+            ) {
                 updateManager.startUpdateFlowForResult(
                     appUpdateInfo,
-                    AppUpdateType.IMMEDIATE, this, MY_REQUEST_CODE
+                    forceUpdatePermissionLauncher,
+                    AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build(),
                 )
             }
         }
     }
+
+    private fun forceUpdateCheck() {
+        updateManager
+            .appUpdateInfo
+            .addOnSuccessListener { appUpdateInfo ->
+                if (appUpdateInfo.updateAvailability()
+                    == UpdateAvailability.DEVELOPER_TRIGGERED_UPDATE_IN_PROGRESS
+                ) {
+                    updateManager.startUpdateFlowForResult(
+                        appUpdateInfo,
+                        forceUpdatePermissionLauncher,
+                        AppUpdateOptions.newBuilder(AppUpdateType.IMMEDIATE).build()
+                    )
+                }
+            }
+    }
+
 }
 
