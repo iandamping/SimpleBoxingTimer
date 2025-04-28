@@ -4,25 +4,26 @@ plugins {
     id 'com.google.gms.google-services'
     id 'dagger.hilt.android.plugin'
     id 'kotlin-kapt'
+    id 'org.jetbrains.kotlin.plugin.compose'
 }
 
 android {
     signingConfigs {
         release {
-            storeFile file(var1)
-            storePassword var2
-            keyAlias var3
-            keyPassword var4
+            storeFile file("$rootDir/$JKS_DIRECTION")
+            storePassword BUILD_STORE_PWD
+            keyAlias KEY_ALIAS
+            keyPassword BUILD_KEY_PWD
         }
     }
-    compileSdkVersion 33
-
+    namespace "com.junemon.simpleboxingtimer"
+    compileSdk 35
     defaultConfig {
         applicationId "com.junemon.simpleboxingtimer"
         minSdkVersion 21
-        targetSdkVersion 33
-        versionCode 13
-        versionName "1.3.0"
+        targetSdkVersion 35
+        versionCode 15 // old 14
+        versionName "1.5.0" // old 1.4.0
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         multiDexEnabled true
@@ -55,9 +56,8 @@ android {
     }
 
     composeOptions {
-        kotlinCompilerExtensionVersion '1.3.2'
+        kotlinCompilerExtensionVersion = "1.5.15"
     }
-
     kotlinOptions {
         jvmTarget = "1.8"
         freeCompilerArgs += ["-opt-in=kotlin.RequiresOptIn",
@@ -114,7 +114,8 @@ dependencies {
     implementation "com.google.dagger:hilt-android:$hilt_version"
     kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
     //play core
-    implementation "com.google.android.play:core:1.10.3"
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
     implementation 'com.google.android.gms:play-services-ads:21.3.0'
     //live data
     implementation "androidx.compose.runtime:runtime-livedata:1.4.0-alpha03"
