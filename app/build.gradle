@@ -3,7 +3,7 @@ plugins {
     id 'kotlin-android'
     id 'com.google.gms.google-services'
     id 'dagger.hilt.android.plugin'
-    id 'kotlin-kapt'
+    id 'com.google.devtools.ksp'
     id 'org.jetbrains.kotlin.plugin.compose'
 }
 
@@ -17,13 +17,13 @@ android {
         }
     }
     namespace "com.junemon.simpleboxingtimer"
-    compileSdk 35
+    compileSdk 36
     defaultConfig {
         applicationId "com.junemon.simpleboxingtimer"
-        minSdkVersion 21
-        targetSdkVersion 35
-        versionCode 15 // old 14
-        versionName "1.5.0" // old 1.4.0
+        minSdkVersion 23
+        targetSdkVersion 36
+        versionCode 16 // old 15
+        versionName "1.6.0" // old 1.5.0
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
         resConfigs "en"
         multiDexEnabled true
@@ -47,24 +47,32 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-    }
-
-    buildFeatures {
-        compose true
-    }
-
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.15"
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
         freeCompilerArgs += ["-opt-in=kotlin.RequiresOptIn",
                              // Enable experimental coroutines APIs, including Flow
                              "-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi",
                              "-opt-in=kotlinx.coroutines.FlowPreview",
                              "-opt-in=kotlin.Experimental"]
+    }
+    kotlin {
+        jvmToolchain(17)
+    }
+
+    buildFeatures {
+        compose true
+        buildConfig true
+    }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = compose_ui_version
+    }
+
+    hilt {
+        enableAggregatingTask = true
     }
 
     packagingOptions {
@@ -72,11 +80,6 @@ android {
             excludes += '/META-INF/{AL2.0,LGPL2.1}'
         }
     }
-
-    kapt {
-        correctErrorTypes true
-    }
-
 
     bundle {
         language {
@@ -96,30 +99,39 @@ dependencies {
     implementation 'androidx.core:core-ktx:1.9.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.5.1'
     implementation 'androidx.activity:activity-compose:1.6.1'
-    implementation "androidx.compose.ui:ui:$compose_ui_version"
-    implementation "androidx.compose.ui:ui-tooling-preview:$compose_ui_version"
-    implementation 'androidx.compose.material:material:1.3.1'
-    implementation 'com.google.android.material:material:1.7.0'
+
+    // Tambahkan library Material Components berikut ini
+    implementation("com.google.android.material:material:1.14.0")
+    implementation(platform("androidx.compose:compose-bom:2026.05.00"))
+    // or only import the main APIs for the underlying toolkit systems,
+    // such as input and measurement/layout
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.foundation:foundation'
+    //Material Design 3
+    implementation 'androidx.compose.material3:material3'
+    implementation 'androidx.compose.material:material-icons-extended'
+    implementation 'androidx.compose.material3:material3-window-size-class'
+    // Android Studio Preview support
+    implementation 'androidx.compose.ui:ui-tooling-preview'
+    debugImplementation 'androidx.compose.ui:ui-tooling'
+    debugImplementation "androidx.compose.ui:ui-test-manifest"
+
     testImplementation 'junit:junit:4.13.2'
     androidTestImplementation 'androidx.test.ext:junit:1.1.4'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.5.0'
-    androidTestImplementation "androidx.compose.ui:ui-test-junit4:$compose_ui_version"
-    debugImplementation "androidx.compose.ui:ui-tooling:$compose_ui_version"
-    debugImplementation "androidx.compose.ui:ui-test-manifest:$compose_ui_version"
     //splash
-    implementation 'androidx.core:core-splashscreen:1.0.0'
+    implementation 'androidx.core:core-splashscreen:1.2.0'
     //timber
     implementation 'com.jakewharton.timber:timber:5.0.1'
     //hilt
     implementation "com.google.dagger:hilt-android:$hilt_version"
-    kapt "com.google.dagger:hilt-android-compiler:$hilt_version"
+    ksp "com.google.dagger:hilt-compiler:$hilt_version"
     //play core
     implementation 'com.google.android.play:app-update:2.1.0'
     implementation 'com.google.android.play:app-update-ktx:2.1.0'
-    implementation 'com.google.android.gms:play-services-ads:21.3.0'
+    implementation "com.google.android.gms:play-services-ads:24.9.0"
     //live data
-    implementation "androidx.compose.runtime:runtime-livedata:1.4.0-alpha03"
 
-    implementation "androidx.constraintlayout:constraintlayout-compose:1.0.1"
+    implementation "androidx.constraintlayout:constraintlayout-compose:1.1.1"
 
 }
