@@ -1,7 +1,11 @@
 package com.junemon.simpleboxingtimer.ui.screen
 
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -45,13 +49,14 @@ fun WarningTimeRadioButton(
                 .padding(top = 8.dp, bottom = 8.dp)
         )
 
-        Row(
+        LazyRow(
             modifier = modifier
                 .fillMaxWidth()
                 .height(50.dp),
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.Center,
+            contentPadding = PaddingValues(8.dp)
         ) {
-            listOfRestTime.forEach { text ->
+            items(listOfRestTime) { text ->
                 Row(
                     Modifier
                         .wrapContentWidth()
@@ -71,7 +76,7 @@ fun WarningTimeRadioButton(
                         )
                         // below line is use to add
                         // padding to radio button.
-                        .padding(horizontal = 4.dp)
+                        .padding(horizontal = 2.dp)
 
                 ) {
                     // below line is use to
@@ -97,12 +102,12 @@ fun WarningTimeRadioButton(
                     Text(
                         text = text.name,
                         color = Color.White,
+                        style = MaterialTheme.typography.labelLarge,
                         modifier = Modifier
                             .padding(start = 2.dp)
                             .align(Alignment.CenterVertically)
                     )
                 }
-                Spacer(modifier = Modifier.padding(4.dp))
             }
         }
     }

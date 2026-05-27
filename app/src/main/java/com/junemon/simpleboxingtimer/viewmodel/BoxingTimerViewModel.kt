@@ -1,8 +1,6 @@
 package com.junemon.simpleboxingtimer.viewmodel
 
 import android.text.format.DateUtils
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.junemon.simpleboxingtimer.util.TimerConstant
@@ -31,44 +29,36 @@ class BoxingTimerViewModel @Inject constructor(
     private val bellRinger: BellRinger
 ) : ViewModel() {
 
-    private val _isTimerRunning: MutableLiveData<Boolean> = MutableLiveData(false)
-    private val _restTimeValue: MutableLiveData<Int> = MutableLiveData(DEFAULT_INTEGER_VALUE)
-    private val _roundTimeValue: MutableLiveData<Int> = MutableLiveData(DEFAULT_INTEGER_VALUE)
-    private val _whichRoundValue: MutableLiveData<Int> = MutableLiveData(DEFAULT_INTEGER_VALUE)
+    private val _isTimerRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isTimerRunning: StateFlow<Boolean> get() = _isTimerRunning.asStateFlow()
+
+    private val _restTimeValue: MutableStateFlow<Int> = MutableStateFlow(DEFAULT_INTEGER_VALUE)
+    val restTimeValue: StateFlow<Int> get() = _restTimeValue.asStateFlow()
+
+    private val _roundTimeValue: MutableStateFlow<Int> = MutableStateFlow(DEFAULT_INTEGER_VALUE)
+    val roundTimeValue: StateFlow<Int> get() = _roundTimeValue.asStateFlow()
+
+    private val _whichRoundValue: MutableStateFlow<Int> = MutableStateFlow(DEFAULT_INTEGER_VALUE)
+    val whichRoundValue: StateFlow<Int> get() = _whichRoundValue.asStateFlow()
+
     private val _warningValue: MutableStateFlow<Int> = MutableStateFlow(DEFAULT_INTEGER_VALUE)
+    val warningValue: StateFlow<Int> get() = _warningValue.asStateFlow()
+
     private val _currentTime: MutableStateFlow<Long?> = MutableStateFlow(null)
-    private val _pausedTime: MutableLiveData<Long> = MutableLiveData(DEFAULT_LONG_VALUE)
+    val currentTime: StateFlow<Long?> get() = _currentTime.asStateFlow()
+
+    private val _pausedTime: MutableStateFlow<Long> = MutableStateFlow(DEFAULT_LONG_VALUE)
+    val pausedTime: StateFlow<Long> get() = _pausedTime
+
     private val _roundTimeState: MutableStateFlow<Int> = MutableStateFlow(ROUND_TIME_STATE)
+    val roundTimeState: StateFlow<Int> get() = _roundTimeState.asStateFlow()
 
-    private var _isResting: MutableLiveData<Boolean> = MutableLiveData()
-    val isResting: LiveData<Boolean> get() = _isResting
+    private var _isResting: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val isResting: StateFlow<Boolean> get() = _isResting.asStateFlow()
 
-    private var _roundCounter: MutableLiveData<Int> = MutableLiveData(DEFAULT_ROUND_COUNTER_VALUE)
-    val roundCounter: LiveData<Int> get() = _roundCounter
+    private var _roundCounter: MutableStateFlow<Int> = MutableStateFlow(DEFAULT_ROUND_COUNTER_VALUE)
+    val roundCounter: StateFlow<Int> get() = _roundCounter.asStateFlow()
 
-    private val roundTimeState: StateFlow<Int>
-        get() = _roundTimeState.asStateFlow()
-
-    private val warningValue: StateFlow<Int>
-        get() = _warningValue.asStateFlow()
-
-    val currentTime: StateFlow<Long?>
-        get() = _currentTime.asStateFlow()
-
-    val pausedTime: LiveData<Long>
-        get() = _pausedTime
-
-    val isTimerRunning: LiveData<Boolean>
-        get() = _isTimerRunning
-
-    private val restTimeValue: LiveData<Int>
-        get() = _restTimeValue
-
-    private val roundTimeValue: LiveData<Int>
-        get() = _roundTimeValue
-
-    val whichRoundValue: LiveData<Int>
-        get() = _whichRoundValue
 
     init {
         observeTimer()
@@ -77,15 +67,14 @@ class BoxingTimerViewModel @Inject constructor(
     fun startCounting() {
         when (roundTimeState.value) {
             ROUND_TIME_STATE -> {
-                if (pausedTime.value?.toInt() != DEFAULT_INTEGER_VALUE) {
-                    startTimer(pausedTime.value?.times(ONE_SECOND) ?: DEFAULT_LONG_VALUE) {
+                if (pausedTime.value.toInt() != DEFAULT_INTEGER_VALUE) {
+                    startTimer(pausedTime.value.times(ONE_SECOND)) {
                         setPauseTime(DONE)
                         when {
-                            (roundCounter.value
-                                ?: DEFAULT_ROUND_COUNTER_VALUE) < (whichRoundValue.value
-                                ?: DEFAULT_INTEGER_VALUE) -> {
+                            (roundCounter.value) < (whichRoundValue.value) -> {
                                 startingTimerForRoundOnly()
                             }
+
                             else -> {
                                 resetAll()
                                 endBellSound()
@@ -96,11 +85,10 @@ class BoxingTimerViewModel @Inject constructor(
                     startBellSound()
                     startTimer(roundTimeMapper(roundTimeValue.value)) {
                         when {
-                            (roundCounter.value
-                                ?: DEFAULT_ROUND_COUNTER_VALUE) < (whichRoundValue.value
-                                ?: DEFAULT_INTEGER_VALUE) -> {
+                            (roundCounter.value) < (whichRoundValue.value) -> {
                                 startingTimerForRoundOnly()
                             }
+
                             else -> {
                                 resetAll()
                                 endBellSound()
@@ -109,9 +97,10 @@ class BoxingTimerViewModel @Inject constructor(
                     }
                 }
             }
+
             REST_TIME_STATE -> {
-                if (pausedTime.value?.toInt() != DEFAULT_INTEGER_VALUE) {
-                    startTimer(pausedTime.value?.times(ONE_SECOND) ?: DEFAULT_LONG_VALUE) {
+                if (pausedTime.value.toInt() != DEFAULT_INTEGER_VALUE) {
+                    startTimer(pausedTime.value.times(ONE_SECOND)) {
                         setPauseTime(DONE)
                         startingTimerForRestOnly()
                     }
@@ -143,6 +132,7 @@ class BoxingTimerViewModel @Inject constructor(
 
                         }
                     }
+
                     REST_TIME_STATE -> {
                         it.data2?.let { timeTicking ->
                             val value = DateUtils.formatElapsedTime(timeTicking)
@@ -162,7 +152,8 @@ class BoxingTimerViewModel @Inject constructor(
         finishTicking: () -> Unit
     ) {
         setTimerIsRunning(true)
-        timerHelper.startTimer(durationTime = durationTime,
+        timerHelper.startTimer(
+            durationTime = durationTime,
             onFinish = {
                 setCurrentTime(DONE)
                 setPauseTime(DONE)
@@ -174,7 +165,7 @@ class BoxingTimerViewModel @Inject constructor(
     }
 
     private fun startingTimerForRoundOnly() {
-        if ((restTimeValue.value ?: DEFAULT_INTEGER_VALUE) == DEFAULT_INTEGER_VALUE) {
+        if ((restTimeValue.value) == DEFAULT_INTEGER_VALUE) {
             incrementRoundCounter()
             setIsRoundTimeRunning(ROUND_TIME_STATE)
             startCounting()
@@ -265,7 +256,7 @@ class BoxingTimerViewModel @Inject constructor(
     }
 
     private fun incrementRoundCounter() {
-        _roundCounter.value = (_roundCounter.value)?.plus(1)
+        _roundCounter.value = (_roundCounter.value).plus(1)
     }
 
     private fun resetRoundCounter() {
