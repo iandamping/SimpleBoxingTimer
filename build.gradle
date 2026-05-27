@@ -9,20 +9,22 @@ ext {
 buildscript {
     ext {
         kotlin_version = '2.1.10'
-        coroutine_version = '1.8.0'
-        livedata_version = '2.8.7'
-        hilt_version = '2.56.1'
-        compose_ui_version = '1.3.2'
+        coroutine_version = '1.9.0'
+        hilt_version = '2.57.1'
+        compose_ui_version = '1.5.10'
     }
     repositories {
         google()
         mavenCentral()
     }
     dependencies {
-        classpath 'com.google.gms:google-services:4.3.14'
-        classpath 'com.android.tools.build:gradle:8.6.0'
+
+        classpath 'com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin:2.1.10-1.0.31'
+        classpath 'org.jetbrains.kotlin.plugin.compose:org.jetbrains.kotlin.plugin.compose.gradle.plugin:2.0.0'
+        classpath 'com.google.gms:google-services:4.4.4'
+        // Add the Crashlytics Gradle plugin.
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
-        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+        classpath 'com.android.tools.build:gradle:8.9.1'
         classpath 'org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.1.10'
         // Check that you have the Google Services Gradle plugin v4.3.2 or later
         // (if not, add it).
