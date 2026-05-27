@@ -1,19 +1,21 @@
 package com.junemon.simpleboxingtimer.ui.screen
 
 import android.text.format.DateUtils
-import androidx.compose.foundation.layout.*
-import androidx.compose.material.MaterialTheme
-import androidx.compose.material.Text
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.junemon.simpleboxingtimer.R
-import com.junemon.simpleboxingtimer.ui.theme.CalculatorFontFamily
 
 
 @Composable
@@ -37,10 +39,8 @@ fun TimerText(
                 currentRound,
                 whichRoundRunning
             ),
-            style = MaterialTheme.typography.h4.copy(
-                color = Color.White,
+            style = MaterialTheme.typography.headlineLarge.copy(
                 fontWeight = FontWeight.Bold,
-                fontFamily = CalculatorFontFamily,
                 textAlign = TextAlign.Center
             ),
             textAlign = TextAlign.Center,
@@ -49,10 +49,8 @@ fun TimerText(
 
         Text(
             text = DateUtils.formatElapsedTime(timeTickingForText ?: 0L),
-            style = MaterialTheme.typography.h1.copy(
-                color = Color.White,
+            style = MaterialTheme.typography.displayLarge.copy(
                 fontWeight = FontWeight.ExtraBold,
-                fontFamily = CalculatorFontFamily,
                 textAlign = TextAlign.Center
             ),
             textAlign = TextAlign.Center,
@@ -62,10 +60,8 @@ fun TimerText(
         if (isResting) {
             Text(
                 text = stringResource(id = R.string.rest),
-                style = MaterialTheme.typography.h2.copy(
-                    color = Color.White,
+                style = MaterialTheme.typography.displayLarge.copy(
                     fontWeight = FontWeight.ExtraBold,
-                    fontFamily = CalculatorFontFamily,
                     textAlign = TextAlign.Center
                 ),
                 modifier = Modifier.align(Alignment.CenterHorizontally)

@@ -1,112 +1,149 @@
 package com.junemon.simpleboxingtimer.ui.theme
 
-import androidx.compose.material.Typography
+import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
-import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.junemon.simpleboxingtimer.R
 
-val CalculatorFontFamily = FontFamily(
-    Font(R.font.calculator, FontWeight.Light),
-    Font(R.font.calculator, FontWeight.Normal),
-    Font(R.font.calculator, FontWeight.Normal, FontStyle.Italic),
-    Font(R.font.calculator, FontWeight.Medium),
-    Font(R.font.calculator, FontWeight.Bold)
+val OrbitronFontFamily = FontFamily(
+    Font(resId = R.font.orbitron),
+    Font(resId = R.font.orbitron_extrabold, weight = FontWeight.ExtraBold),
+    Font(resId = R.font.orbitron_semibold, weight = FontWeight.SemiBold),
+    Font(resId = R.font.orbitron_medium, weight = FontWeight.Medium),
+    Font(resId = R.font.orbitron_bold, weight = FontWeight.Bold),
+    Font(resId = R.font.orbitron_black, weight = FontWeight.Black)
 )
 
-private val EczarFontFamily = FontFamily(
-    Font(R.font.eczar_regular),
-    Font(R.font.eczar_semibold, FontWeight.SemiBold)
-)
-private val RobotoCondensed = FontFamily(
-    Font(R.font.robotocondensed_regular),
-    Font(R.font.robotocondensed_light, FontWeight.Light),
-    Font(R.font.robotocondensed_bold, FontWeight.Bold)
-)
+//val CalculatorFontFamily = FontFamily(
+//    Font(R.font.calculator, FontWeight.Light),
+//    Font(R.font.calculator, FontWeight.Normal),
+//    Font(R.font.calculator, FontWeight.Normal, FontStyle.Italic),
+//    Font(R.font.calculator, FontWeight.Medium),
+//    Font(R.font.calculator, FontWeight.Bold)
+//)
+
+//private val OrbitronFontFamily = FontFamily(
+//    Font(R.font.eczar_regular),
+//    Font(R.font.eczar_semibold, FontWeight.SemiBold)
+//)
 
 // Set of Material typography styles to start with
-val Typography = Typography(
-    /* Other default text styles to override
-    button = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.W500,
-        fontSize = 14.sp
+val SimpleTimerTypography = Typography(
+    // --- DISPLAY: Untuk headline besar ---
+    displayLarge = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Black,
+        fontSize = 57.sp,
+        lineHeight = 64.sp,
+        letterSpacing = (-0.25).sp
     ),
-    caption = TextStyle(
-        fontFamily = FontFamily.Default,
-        fontWeight = FontWeight.Normal,
-        fontSize = 12.sp
-    )
-    */
+    displayMedium = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 45.sp,
+        lineHeight = 52.sp,
+        letterSpacing = 0.sp
+    ),
+    displaySmall = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 36.sp,
+        lineHeight = 44.sp,
+        letterSpacing = 0.sp
+    ),
 
-    defaultFontFamily = RobotoCondensed,
-    h1 = TextStyle(
-        fontWeight = FontWeight.W100,
-        fontSize = 96.sp,
+    // --- HEADLINE: Untuk judul bagian atau info lokasi ---
+    headlineLarge = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 32.sp,
+        lineHeight = 40.sp,
+        letterSpacing = 0.sp
     ),
-    h2 = TextStyle(
-        fontWeight = FontWeight.SemiBold,
-        fontSize = 44.sp,
-        fontFamily = EczarFontFamily,
-        letterSpacing = 1.5.sp
+    headlineMedium = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 28.sp,
+        lineHeight = 36.sp,
+        letterSpacing = 0.sp
     ),
-    h3 = TextStyle(
-        fontWeight = FontWeight.W400,
-        fontSize = 14.sp
+    headlineSmall = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 24.sp,
+        lineHeight = 32.sp,
+        letterSpacing = 0.sp
     ),
-    h4 = TextStyle(
-        fontWeight = FontWeight.W700,
-        fontSize = 34.sp
+
+    // --- TITLE: Untuk TopAppBar atau judul Card ---
+    titleLarge = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 22.sp,
+        lineHeight = 28.sp,
+        letterSpacing = 0.sp
     ),
-    h5 = TextStyle(
-        fontWeight = FontWeight.W700,
-        fontSize = 24.sp
-    ),
-    h6 = TextStyle(
-        fontWeight = FontWeight.Normal,
-        fontSize = 18.sp,
-        lineHeight = 20.sp,
-        fontFamily = EczarFontFamily,
-        letterSpacing = 3.sp
-    ),
-    subtitle1 = TextStyle(
-        fontWeight = FontWeight.Light,
-        fontSize = 14.sp,
-        lineHeight = 20.sp,
-        letterSpacing = 3.sp
-    ),
-    subtitle2 = TextStyle(
-        fontWeight = FontWeight.Normal,
-        fontSize = 14.sp,
-        letterSpacing = 0.1.em
-    ),
-    body1 = TextStyle(
-        fontWeight = FontWeight.Normal,
+    titleMedium = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Bold,
         fontSize = 16.sp,
-        letterSpacing = 0.1.em
+        lineHeight = 24.sp,
+        letterSpacing = 0.15.sp
     ),
-    body2 = TextStyle(
-        fontWeight = FontWeight.Normal,
+    titleSmall = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Medium,
         fontSize = 14.sp,
         lineHeight = 20.sp,
-        letterSpacing = 0.1.em
+        letterSpacing = 0.1.sp
     ),
-    button = TextStyle(
+
+    // --- BODY: Untuk teks isi, deskripsi ---
+    bodyLarge = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    bodyMedium = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.25.sp
+    ),
+    bodySmall = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Light,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.4.sp
+    ),
+
+    // --- LABEL: Untuk teks di button, badge, atau caption kecil ---
+    labelLarge = TextStyle(
+        fontFamily = OrbitronFontFamily,
         fontWeight = FontWeight.Bold,
         fontSize = 14.sp,
+        lineHeight = 20.sp,
+        letterSpacing = 0.1.sp
+    ),
+    labelMedium = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Bold,
+        fontSize = 12.sp,
         lineHeight = 16.sp,
-        letterSpacing = 0.2.em
+        letterSpacing = 0.5.sp
     ),
-    caption = TextStyle(
-        fontWeight = FontWeight.W500,
-        fontSize = 12.sp
-    ),
-    overline = TextStyle(
-        fontWeight = FontWeight.W500,
-        fontSize = 10.sp
+    labelSmall = TextStyle(
+        fontFamily = OrbitronFontFamily,
+        fontWeight = FontWeight.Medium,
+        fontSize = 11.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp
     )
 )
