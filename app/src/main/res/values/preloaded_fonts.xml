@@ -2,5 +2,10 @@
 <resources>
     <array name="preloaded_fonts" translatable="false">
         <item>@font/lato_thin</item>
+        <item>@font/orbitron_black</item>
+        <item>@font/orbitron_bold</item>
+        <item>@font/orbitron_extrabold</item>
+        <item>@font/orbitron_medium</item>
+        <item>@font/orbitron_semibold</item>
     </array>
 </resources>
