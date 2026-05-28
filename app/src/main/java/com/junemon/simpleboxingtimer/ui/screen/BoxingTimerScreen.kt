@@ -14,18 +14,19 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.google.android.gms.ads.AdRequest
 import com.google.android.gms.ads.AdSize
 import com.google.android.gms.ads.AdView
 import com.junemon.simpleboxingtimer.R
 import com.junemon.simpleboxingtimer.util.TimerConstant
 import com.junemon.simpleboxingtimer.viewmodel.BoxingTimerViewModel
+import com.junemon.simpleboxingtimer.viewmodel.DataProviderViewModel
 
 @Composable
 fun BoxingTimerScreen(
     modifier: Modifier = Modifier,
     lifecycleOwner: LifecycleOwner = androidx.lifecycle.compose.LocalLifecycleOwner.current,
-    timerVm: BoxingTimerViewModel
+    timerVm: BoxingTimerViewModel,
+    dataVm: DataProviderViewModel
 ) {
     LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
@@ -61,7 +62,7 @@ fun BoxingTimerScreen(
         val topGuideLine = createGuidelineFromTop(0.1f)
         val bottomGuideLine = createGuidelineFromBottom(0.2f)
         if (isTimerRunning) {
-            TimerText(
+            TimerInformationSection(
                 modifier = Modifier.constrainAs(timerRef) {
                     top.linkTo(topGuideLine)
                     end.linkTo(parent.end)
@@ -75,7 +76,7 @@ fun BoxingTimerScreen(
             )
         } else {
             if (pauseTime != TimerConstant.DEFAULT_LONG_VALUE) {
-                TimerText(
+                TimerInformationSection(
                     modifier = Modifier.constrainAs(timerRef) {
                         top.linkTo(topGuideLine)
                         end.linkTo(parent.end)
@@ -86,7 +87,7 @@ fun BoxingTimerScreen(
                     currentRound = currentRound,
                     whichRoundRunning = whichRoundRunning
                 )
-            } else NumberPickerSelectingRestRoundTimeAndRoundScreen(
+            } else IntervalSetupSection(
                 modifier = Modifier.constrainAs(
                     selectingTimeAndRoundRef
                 ) {
@@ -97,11 +98,12 @@ fun BoxingTimerScreen(
                 },
                 setRestTime = timerVm::setRestTime,
                 setRoundTime = timerVm::setRoundTime,
-                setWhichRound = timerVm::setWhichRound
+                setWhichRound = timerVm::setWhichRound,
+                timerClassifications = dataVm.listOfTimerClassification
             )
         }
 
-        WarningTimeRadioButton(
+        WarningTimeRadioSection(
             modifier = Modifier.constrainAs(warningButtonRef) {
                 top.linkTo(
                     if (isTimerRunning) {
@@ -119,10 +121,11 @@ fun BoxingTimerScreen(
             },
             pauseTime = pauseTime,
             isRadioButtonEnabled = isRadioButtonEnabled,
-            setWarningValue = timerVm::setWarningValue
+            setWarningValue = timerVm::setWarningValue,
+            restTimes = dataVm.listOfRestTime
         )
 
-        IntervalTimerButton(
+        IntervalTimerButtonSection(
             modifier = Modifier.constrainAs(intervalTimerButtonRef) {
                 top.linkTo(warningButtonRef.bottom)
                 start.linkTo(parent.start)

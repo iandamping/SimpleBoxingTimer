@@ -19,7 +19,7 @@ import com.junemon.simpleboxingtimer.R
 
 
 @Composable
-fun TimerText(
+fun TimerInformationSection(
     modifier: Modifier = Modifier,
     isResting: Boolean,
     timeTickingForText: Long?,
@@ -43,32 +43,38 @@ fun TimerText(
                 fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center
             ),
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             textAlign = TextAlign.Center,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
-        Text(
-            text = DateUtils.formatElapsedTime(timeTickingForText ?: 0L),
-            style = MaterialTheme.typography.displayLarge.copy(
-                fontWeight = FontWeight.ExtraBold,
-                textAlign = TextAlign.Center
-            ),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.align(Alignment.CenterHorizontally)
-        )
+        Spacer(modifier = Modifier.height(40.dp))
 
-        if (isResting) {
+        Column {
             Text(
-                text = stringResource(id = R.string.rest),
+                text = DateUtils.formatElapsedTime(timeTickingForText ?: 0L),
                 style = MaterialTheme.typography.displayLarge.copy(
                     fontWeight = FontWeight.ExtraBold,
                     textAlign = TextAlign.Center
                 ),
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
+                textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.CenterHorizontally)
             )
-        } else {
-            Spacer(modifier = Modifier.height(40.dp))
+
+            if (isResting) {
+                Text(
+                    text = stringResource(id = R.string.rest),
+                    style = MaterialTheme.typography.displaySmall.copy(
+                        fontWeight = FontWeight.ExtraBold,
+                        textAlign = TextAlign.Center
+                    ),
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
         }
+
     }
 
 }
