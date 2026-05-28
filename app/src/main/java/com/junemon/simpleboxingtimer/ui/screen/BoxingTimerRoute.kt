@@ -6,6 +6,7 @@ import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
@@ -97,12 +98,21 @@ private fun LifecycleOwnerListener(
     lifecycleOwner: LifecycleOwner,
     cancelAllTimer: () -> Unit
 ) {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+
     DisposableEffect(lifecycleOwner) {
         // Create an observer that triggers our remembered callbacks
         // for sending analytics events
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_STOP) {
-                cancelAllTimer.invoke()
+                // Cek apakah stop ini karena rotasi layar / change configuration
+                val isRotating = activity?.isChangingConfigurations == true
+
+                // Jika TIDAK sedang rotasi, baru pause/cancel timer
+                if (!isRotating) {
+                    cancelAllTimer.invoke()
+                }
             }
         }
 
@@ -115,5 +125,6 @@ private fun LifecycleOwnerListener(
         }
     }
 }
+
 
 
