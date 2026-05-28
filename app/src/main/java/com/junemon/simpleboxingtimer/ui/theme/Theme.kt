@@ -3,59 +3,47 @@ package com.junemon.simpleboxingtimer.ui.theme
 import android.os.Build
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 
-// Rally is always dark themed.
 private val LightSunnyColorScheme = lightColorScheme(
     primary = PrimarySunnySky,
+    onPrimary = OnPrimarySunnySky,
     primaryContainer = PrimaryContainerSunnySky,
+    onPrimaryContainer = OnPrimaryContainerSunnySky,
+    secondary = SecondarySunnySky,
+    onSecondary = OnSecondarySunnySky,
+    secondaryContainer = SecondaryContainerSunnySky,
+    onSecondaryContainer = OnSecondaryContainerSunnySky,
     surface = SurfaceSunnySky,
+    onSurface = OnSurfaceSunnySky,
+    surfaceVariant = SurfaceVariantSunnySky,
+    onSurfaceVariant = OnSurfaceVariantSunnySky,
     background = BackgroundSunnySky,
-    secondary = SecondarySunnySky
+    onBackground = OnBackgroundSunnySky,
+    outline = OutlineSunnySky
 )
 
-private val DarkSunnyColorScheme = lightColorScheme(
+private val DarkSunnyColorScheme = darkColorScheme(
     primary = DarkPrimarySunnySky,
+    onPrimary = DarkOnPrimarySunnySky,
     primaryContainer = DarkPrimaryContainerSunnySky,
+    onPrimaryContainer = DarkOnPrimaryContainerSunnySky,
+    secondary = DarkSecondarySunnySky,
+    onSecondary = DarkOnSecondarySunnySky,
+    secondaryContainer = DarkSecondaryContainerSunnySky,
+    onSecondaryContainer = DarkOnSecondaryContainerSunnySky,
     surface = DarkSurfaceSunnySky,
+    onSurface = DarkOnSurfaceSunnySky,
+    surfaceVariant = DarkSurfaceVariantSunnySky,
+    onSurfaceVariant = DarkOnSurfaceVariantSunnySky,
     background = DarkBackgroundSunnySky,
-    secondary = DarkSecondarySunnySky
-)
-
-private val LightCloudyColorScheme = lightColorScheme(
-    primary = PrimaryCloudy,
-    primaryContainer = PrimaryContainerCloudy,
-    surface = SurfaceCloudy,
-    background = BackgroundCloudy,
-    tertiary = TertiaryCloudy
-)
-
-private val DarkCloudyColorScheme = lightColorScheme(
-    primary = DarkPrimaryCloudy,
-    primaryContainer = DarkPrimaryContainerCloudy,
-    surface = DarkSurfaceCloudy,
-    background = DarkBackgroundCloudy,
-    tertiary = DarkTertiaryCloudy
-)
-
-private val LightStormyColorScheme = lightColorScheme(
-    primary = PrimaryStormy,
-    primaryContainer = PrimaryContainerStormy,
-    surface = SurfaceStormy,
-    background = BackgroundStormy,
-    secondary = SecondaryStormy
-)
-
-private val DarkStormyColorScheme = lightColorScheme(
-    primary = DarkPrimaryStormy,
-    primaryContainer = DarkPrimaryContainerStormy,
-    surface = DarkSurfaceStormy,
-    background = DarkBackgroundStormy,
-    secondary = DarkSecondaryStormy
+    onBackground = DarkOnBackgroundSunnySky,
+    outline = DarkOutlineSunnySky
 )
 
 @Composable

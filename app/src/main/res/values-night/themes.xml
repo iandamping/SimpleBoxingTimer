@@ -36,4 +36,10 @@
         // Set the theme of the Activity that directly follows your splash screen.
         <item name="postSplashScreenTheme">@style/Theme.SimpleBoxingTimer</item>  # Required.
     </style>
+
+    <style name="NumberPickerStyle">
+        <item name="android:textColorPrimary">@color/dynamic_text_light_color</item>
+        <item name="android:editTextColor">@color/dynamic_text_light_color</item>
+    </style>
+
 </resources>
