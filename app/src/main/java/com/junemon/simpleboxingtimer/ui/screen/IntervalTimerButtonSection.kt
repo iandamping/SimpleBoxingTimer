@@ -12,7 +12,7 @@ import com.junemon.simpleboxingtimer.R
 
 
 @Composable
-fun IntervalTimerButton(
+fun IntervalTimerButtonSection(
     modifier: Modifier = Modifier,
     isTimerRunning: Boolean,
     cancelAllTimer: () -> Unit,

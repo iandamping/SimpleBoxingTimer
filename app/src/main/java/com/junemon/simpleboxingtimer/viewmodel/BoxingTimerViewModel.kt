@@ -116,16 +116,16 @@ class BoxingTimerViewModel @Inject constructor(
     private fun observeTimer() {
         viewModelScope.launch {
             combine(roundTimeState, currentTime, warningValue) { state, timeTicking, warning ->
-                GenericTriple(state, timeTicking, warning)
+                Triple(state, timeTicking, warning)
             }.collect {
-                when (it.data1) {
+                when (it.first) {
                     ROUND_TIME_STATE -> {
-                        it.data2?.let { timeTicking ->
+                        it.second?.let { timeTicking ->
                             val value = DateUtils.formatElapsedTime(timeTicking)
                             setResting(false)
 
-                            if (it.data3 != DEFAULT_INTEGER_VALUE) {
-                                if (value == "00:${it.data3}") {
+                            if (it.third != DEFAULT_INTEGER_VALUE) {
+                                if (value == "00:${it.third}") {
                                     warningBellSound()
                                 }
                             }
@@ -134,7 +134,7 @@ class BoxingTimerViewModel @Inject constructor(
                     }
 
                     REST_TIME_STATE -> {
-                        it.data2?.let { timeTicking ->
+                        it.second?.let { timeTicking ->
                             val value = DateUtils.formatElapsedTime(timeTicking)
 
                             if (value != "00:00") {

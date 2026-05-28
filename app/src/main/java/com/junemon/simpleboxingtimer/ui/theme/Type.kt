@@ -17,19 +17,6 @@ val OrbitronFontFamily = FontFamily(
     Font(resId = R.font.orbitron_black, weight = FontWeight.Black)
 )
 
-//val CalculatorFontFamily = FontFamily(
-//    Font(R.font.calculator, FontWeight.Light),
-//    Font(R.font.calculator, FontWeight.Normal),
-//    Font(R.font.calculator, FontWeight.Normal, FontStyle.Italic),
-//    Font(R.font.calculator, FontWeight.Medium),
-//    Font(R.font.calculator, FontWeight.Bold)
-//)
-
-//private val OrbitronFontFamily = FontFamily(
-//    Font(R.font.eczar_regular),
-//    Font(R.font.eczar_semibold, FontWeight.SemiBold)
-//)
-
 // Set of Material typography styles to start with
 val SimpleTimerTypography = Typography(
     // --- DISPLAY: Untuk headline besar ---

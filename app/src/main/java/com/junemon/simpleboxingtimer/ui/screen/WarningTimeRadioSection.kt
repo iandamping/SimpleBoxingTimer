@@ -1,7 +1,13 @@
 package com.junemon.simpleboxingtimer.ui.screen
 
-import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.selection.selectable
@@ -13,27 +19,22 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.junemon.simpleboxingtimer.R
 import com.junemon.simpleboxingtimer.util.TimerConstant
 import com.junemon.simpleboxingtimer.viewmodel.RestTime
 
-
 @Composable
-fun WarningTimeRadioButton(
+fun WarningTimeRadioSection(
     modifier: Modifier = Modifier,
+    restTimes: List<RestTime>,
     pauseTime: Long?,
     isRadioButtonEnabled: Boolean,
     setWarningValue: (Int) -> Unit,
 ) {
-    val listOfRestTime = listOf(
-        RestTime(stringResource(id = R.string.off), 0),
-        RestTime(stringResource(id = R.string.ten_second), 10),
-        RestTime(stringResource(id = R.string.thirty_sec), 30),
-    )
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(listOfRestTime[0]) }
+
+    val (selectedOption, onOptionSelected) = remember { mutableStateOf(restTimes[0]) }
 
     Column(
         modifier = modifier
@@ -43,7 +44,7 @@ fun WarningTimeRadioButton(
 
         Text(
             text = stringResource(id = R.string.warning),
-            color = Color.White,
+            color = MaterialTheme.colorScheme.onPrimaryContainer,
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(top = 8.dp, bottom = 8.dp)
@@ -56,7 +57,7 @@ fun WarningTimeRadioButton(
             horizontalArrangement = Arrangement.Center,
             contentPadding = PaddingValues(8.dp)
         ) {
-            items(listOfRestTime) { text ->
+            items(restTimes) { text ->
                 Row(
                     Modifier
                         .wrapContentWidth()
@@ -101,8 +102,8 @@ fun WarningTimeRadioButton(
                     // text to our radio buttons.
                     Text(
                         text = text.name,
-                        color = Color.White,
                         style = MaterialTheme.typography.labelLarge,
+                        color = MaterialTheme.colorScheme.onPrimaryContainer,
                         modifier = Modifier
                             .padding(start = 2.dp)
                             .align(Alignment.CenterVertically)
