@@ -15,26 +15,30 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.RadioButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.junemon.simpleboxingtimer.R
 import com.junemon.simpleboxingtimer.util.TimerConstant
-import com.junemon.simpleboxingtimer.viewmodel.RestTime
+import com.junemon.simpleboxingtimer.viewmodel.WarningTime
 
 @Composable
 fun WarningTimeRadioSection(
     modifier: Modifier = Modifier,
-    restTimes: List<RestTime>,
+    warningTimes: List<WarningTime>,
+    selectedOption: WarningTime,
+    onOptionSelected: (WarningTime) -> Unit,
     pauseTime: Long?,
     isRadioButtonEnabled: Boolean,
     setWarningValue: (Int) -> Unit,
 ) {
 
-    val (selectedOption, onOptionSelected) = remember { mutableStateOf(restTimes[0]) }
+    val isEnabled = if (isRadioButtonEnabled) {
+        false
+    } else {
+        pauseTime == TimerConstant.DEFAULT_LONG_VALUE
+    }
 
     Column(
         modifier = modifier
@@ -57,7 +61,7 @@ fun WarningTimeRadioSection(
             horizontalArrangement = Arrangement.Center,
             contentPadding = PaddingValues(8.dp)
         ) {
-            items(restTimes) { text ->
+            items(warningTimes) { text ->
                 Row(
                     Modifier
                         .wrapContentWidth()
@@ -69,11 +73,7 @@ fun WarningTimeRadioSection(
                                 onOptionSelected(text)
                                 setWarningValue.invoke(text.time)
                             },
-                            enabled = if (isRadioButtonEnabled) {
-                                false
-                            } else {
-                                pauseTime == TimerConstant.DEFAULT_LONG_VALUE
-                            }
+                            enabled = isEnabled
                         )
                         // below line is use to add
                         // padding to radio button.

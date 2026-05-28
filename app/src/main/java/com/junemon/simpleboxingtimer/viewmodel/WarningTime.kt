@@ -6,4 +6,4 @@ package com.junemon.simpleboxingtimer.viewmodel
  * Github https://github.com/iandamping
  * Indonesia.
  */
-data class RestTime(val name: String, val time: Int)
+data class WarningTime(val name: String, val time: Int)

@@ -1,7 +1,6 @@
 package com.junemon.simpleboxingtimer.ui.screen
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
@@ -34,6 +33,7 @@ fun BoxingTimerRoute(
     val currentRound by timerVm.roundCounter.collectAsStateWithLifecycle()
     val whichRoundRunning by timerVm.whichRoundValue.collectAsStateWithLifecycle()
     val isRadioButtonEnabled by timerVm.isTimerRunning.collectAsStateWithLifecycle()
+    val selectedWarningOption by timerVm.selectedWarningOption.collectAsStateWithLifecycle()
 
 
     LifecycleOwnerListener(
@@ -51,7 +51,7 @@ fun BoxingTimerRoute(
             timeTicking = timeTickingForText,
             currentRound = currentRound,
             whichRoundRunning = whichRoundRunning,
-            restTimes = dataVm.listOfRestTime,
+            warningTimes = dataVm.listOfWarningTimes,
             timerClassifications = dataVm.listOfTimerClassification,
             setRestTime = timerVm::setRestTime,
             setRoundTime = timerVm::setRoundTime,
@@ -60,7 +60,9 @@ fun BoxingTimerRoute(
             cancelAllTimer = timerVm::cancelAllTimer,
             startCounting = timerVm::startCounting,
             resetAllTimer = timerVm::resetAll,
-            adView = adsVm.bannerAdView
+            adView = adsVm.bannerAdView,
+            selectedWarningOption = selectedWarningOption,
+            onWarningOptionSelected = timerVm::setWarningOptions
         )
     } else {
         PortraitBoxingTimerScreen(
@@ -72,7 +74,7 @@ fun BoxingTimerRoute(
             timeTicking = timeTickingForText,
             currentRound = currentRound,
             whichRoundRunning = whichRoundRunning,
-            restTimes = dataVm.listOfRestTime,
+            warningTimes = dataVm.listOfWarningTimes,
             timerClassifications = dataVm.listOfTimerClassification,
             setRestTime = timerVm::setRestTime,
             setRoundTime = timerVm::setRoundTime,
@@ -81,7 +83,9 @@ fun BoxingTimerRoute(
             cancelAllTimer = timerVm::cancelAllTimer,
             startCounting = timerVm::startCounting,
             resetAllTimer = timerVm::resetAll,
-            adView = adsVm.bannerAdView
+            adView = adsVm.bannerAdView,
+            selectedWarningOption = selectedWarningOption,
+            onWarningOptionSelected = timerVm::setWarningOptions
         )
     }
 
