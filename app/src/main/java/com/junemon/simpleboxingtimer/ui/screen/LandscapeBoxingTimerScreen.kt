@@ -8,7 +8,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.android.gms.ads.AdView
 import com.junemon.simpleboxingtimer.util.TimerConstant
-import com.junemon.simpleboxingtimer.viewmodel.RestTime
+import com.junemon.simpleboxingtimer.viewmodel.WarningTime
 import com.junemon.simpleboxingtimer.viewmodel.TimerClassification
 
 @Composable
@@ -22,7 +22,8 @@ fun LandscapeBoxingTimerScreen(
     timeTicking: Long?,
     currentRound: Int,
     whichRoundRunning: Int,
-    restTimes: List<RestTime>,
+    selectedWarningOption: WarningTime,
+    warningTimes: List<WarningTime>,
     timerClassifications: List<TimerClassification>,
     setRestTime: (Int) -> Unit,
     setRoundTime: (Int) -> Unit,
@@ -31,6 +32,7 @@ fun LandscapeBoxingTimerScreen(
     cancelAllTimer: () -> Unit,
     startCounting: () -> Unit,
     resetAllTimer: () -> Unit,
+    onWarningOptionSelected: (WarningTime) -> Unit,
 ) {
     ConstraintLayout(modifier = modifier.verticalScroll(rememberScrollState())) {
         val (timerRef, selectingTimeAndRoundRef, warningButtonRef, intervalTimerButtonRef, bannerAddViewRef) = createRefs()
@@ -96,7 +98,9 @@ fun LandscapeBoxingTimerScreen(
             pauseTime = pauseTime,
             isRadioButtonEnabled = isRadioButtonEnabled,
             setWarningValue = setWarningValue,
-            restTimes = restTimes
+            warningTimes = warningTimes,
+            selectedOption = selectedWarningOption,
+            onOptionSelected = onWarningOptionSelected,
         )
 
         IntervalTimerButtonSection(

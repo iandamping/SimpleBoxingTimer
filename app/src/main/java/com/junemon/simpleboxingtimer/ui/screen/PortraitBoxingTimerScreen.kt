@@ -8,7 +8,7 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.android.gms.ads.AdView
 import com.junemon.simpleboxingtimer.util.TimerConstant
-import com.junemon.simpleboxingtimer.viewmodel.RestTime
+import com.junemon.simpleboxingtimer.viewmodel.WarningTime
 import com.junemon.simpleboxingtimer.viewmodel.TimerClassification
 
 @Composable
@@ -22,7 +22,8 @@ fun PortraitBoxingTimerScreen(
     timeTicking: Long?,
     currentRound: Int,
     whichRoundRunning: Int,
-    restTimes: List<RestTime>,
+    selectedWarningOption: WarningTime,
+    warningTimes: List<WarningTime>,
     timerClassifications: List<TimerClassification>,
     setRestTime: (Int) -> Unit,
     setRoundTime: (Int) -> Unit,
@@ -31,13 +32,13 @@ fun PortraitBoxingTimerScreen(
     cancelAllTimer: () -> Unit,
     startCounting: () -> Unit,
     resetAllTimer: () -> Unit,
+    onWarningOptionSelected: (WarningTime) -> Unit,
 ) {
     ConstraintLayout(modifier = modifier.verticalScroll(rememberScrollState())) {
         val (timerRef, selectingTimeAndRoundRef, warningButtonRef, intervalTimerButtonRef, bannerAddViewRef) = createRefs()
         val topGuideLine = createGuidelineFromTop(0.1f)
         val bottomGuideLine = createGuidelineFromBottom(0.2f)
         val centerVerticalGuideline = createGuidelineFromTop(0.5f)
-        val bottomAnchor = createGuidelineFromBottom(0.9f)
 
         if (isTimerRunning) {
             TimerInformationSection(
@@ -95,7 +96,9 @@ fun PortraitBoxingTimerScreen(
             pauseTime = pauseTime,
             isRadioButtonEnabled = isRadioButtonEnabled,
             setWarningValue = setWarningValue,
-            restTimes = restTimes
+            warningTimes = warningTimes,
+            selectedOption = selectedWarningOption,
+            onOptionSelected = onWarningOptionSelected,
         )
 
         IntervalTimerButtonSection(

@@ -3,6 +3,7 @@ package com.junemon.simpleboxingtimer.viewmodel
 import android.text.format.DateUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.junemon.simpleboxingtimer.R
 import com.junemon.simpleboxingtimer.util.TimerConstant
 import com.junemon.simpleboxingtimer.util.TimerConstant.DEFAULT_INTEGER_VALUE
 import com.junemon.simpleboxingtimer.util.TimerConstant.DEFAULT_LONG_VALUE
@@ -13,6 +14,7 @@ import com.junemon.simpleboxingtimer.util.TimerConstant.ONE_SECOND
 import com.junemon.simpleboxingtimer.util.TimerConstant.REST_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.ROUND_TIME_STATE
 import com.junemon.simpleboxingtimer.util.TimerConstant.setCustomMinutes
+import com.junemon.simpleboxingtimer.util.resource.ResourceHelper
 import com.junemon.simpleboxingtimer.util.ringer.BellRinger
 import com.junemon.simpleboxingtimer.util.timer.BoxingTimer
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,13 +22,15 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class BoxingTimerViewModel @Inject constructor(
     private val timerHelper: BoxingTimer,
-    private val bellRinger: BellRinger
+    private val bellRinger: BellRinger,
+    private val resourceHelper: ResourceHelper
 ) : ViewModel() {
 
     private val _isTimerRunning: MutableStateFlow<Boolean> = MutableStateFlow(false)
@@ -58,6 +62,10 @@ class BoxingTimerViewModel @Inject constructor(
 
     private var _roundCounter: MutableStateFlow<Int> = MutableStateFlow(DEFAULT_ROUND_COUNTER_VALUE)
     val roundCounter: StateFlow<Int> get() = _roundCounter.asStateFlow()
+
+    private var _selectedWarningOption: MutableStateFlow<WarningTime> =
+        MutableStateFlow(WarningTime(resourceHelper.provideString(resourceId = R.string.off), 0))
+    val selectedWarningOption: StateFlow<WarningTime> get() = _selectedWarningOption.asStateFlow()
 
 
     init {
@@ -183,11 +191,11 @@ class BoxingTimerViewModel @Inject constructor(
     }
 
     fun setRoundTime(data: Int) {
-        _roundTimeValue.value = data
+        _roundTimeValue.update { data }
     }
 
     private fun resetRoundTime() {
-        _roundTimeValue.value = DEFAULT_INTEGER_VALUE
+        _roundTimeValue.update { DEFAULT_INTEGER_VALUE }
     }
 
     private fun roundTimeMapper(data: Int?): Long {
@@ -227,6 +235,7 @@ class BoxingTimerViewModel @Inject constructor(
         setPauseTime(DONE)
         setTimerIsRunning(false)
         setIsRoundTimeRunning(ROUND_TIME_STATE)
+        setWarningOptions(WarningTime(resourceHelper.provideString(resourceId = R.string.off), 0))
         resetWarningValue()
     }
 
@@ -236,36 +245,36 @@ class BoxingTimerViewModel @Inject constructor(
     }
 
     private fun setCurrentTime(data: Long) {
-        _currentTime.value = data
+        _currentTime.update { data }
     }
 
     private fun setPauseTime(data: Long) {
-        _pausedTime.value = data
+        _pausedTime.update { data }
     }
 
     private fun resetPauseTime() {
-        _pausedTime.value = DEFAULT_LONG_VALUE
+        _pausedTime.update { DEFAULT_LONG_VALUE }
     }
 
     fun setRestTime(data: Int) {
-        _restTimeValue.value = data
+        _restTimeValue.update { data }
     }
 
     private fun resetRestTime() {
-        _restTimeValue.value = DEFAULT_INTEGER_VALUE
+        _restTimeValue.update { DEFAULT_INTEGER_VALUE }
     }
 
     private fun incrementRoundCounter() {
-        _roundCounter.value = (_roundCounter.value).plus(1)
+        _roundCounter.update { (_roundCounter.value).plus(1) }
     }
 
     private fun resetRoundCounter() {
-        _roundCounter.value = DEFAULT_ROUND_COUNTER_VALUE
+        _roundCounter.update { DEFAULT_ROUND_COUNTER_VALUE }
     }
 
 
     private fun setResting(data: Boolean) {
-        _isResting.value = data
+        _isResting.update { data }
     }
 
     private fun resetResting() {
@@ -275,28 +284,32 @@ class BoxingTimerViewModel @Inject constructor(
     fun setWhichRound(data: Int) {
         if (data == 16) {
             //set infinity
-            _whichRoundValue.value = Int.MAX_VALUE
-        } else _whichRoundValue.value = data
+            _whichRoundValue.update { Int.MAX_VALUE }
+        } else _whichRoundValue.update { data }
+    }
+
+    fun setWarningOptions(time: WarningTime) {
+        _selectedWarningOption.update { time }
     }
 
     private fun resetWhichRound() {
-        _whichRoundValue.value = DEFAULT_WHICH_ROUND_COUNTER_VALUE
+        _whichRoundValue.update { DEFAULT_WHICH_ROUND_COUNTER_VALUE }
     }
 
     fun setWarningValue(data: Int) {
-        _warningValue.value = data
+        _warningValue.update { data }
     }
 
     private fun resetWarningValue() {
-        _warningValue.value = DEFAULT_INTEGER_VALUE
+        _warningValue.update { DEFAULT_INTEGER_VALUE }
     }
 
     private fun setTimerIsRunning(data: Boolean) {
-        _isTimerRunning.value = data
+        _isTimerRunning.update { data }
     }
 
     private fun setIsRoundTimeRunning(data: Int) {
-        _roundTimeState.value = data
+        _roundTimeState.update { data }
     }
 
     private fun startBellSound() {

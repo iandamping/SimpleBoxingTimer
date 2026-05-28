@@ -1,18 +1,19 @@
 package com.junemon.simpleboxingtimer.ui.screen
 
 import android.content.res.Configuration.ORIENTATION_LANDSCAPE
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.junemon.simpleboxingtimer.util.findActivity
 import com.junemon.simpleboxingtimer.viewmodel.AdsViewModel
 import com.junemon.simpleboxingtimer.viewmodel.BoxingTimerViewModel
 import com.junemon.simpleboxingtimer.viewmodel.DataProviderViewModel
@@ -34,6 +35,7 @@ fun BoxingTimerRoute(
     val currentRound by timerVm.roundCounter.collectAsStateWithLifecycle()
     val whichRoundRunning by timerVm.whichRoundValue.collectAsStateWithLifecycle()
     val isRadioButtonEnabled by timerVm.isTimerRunning.collectAsStateWithLifecycle()
+    val selectedWarningOption by timerVm.selectedWarningOption.collectAsStateWithLifecycle()
 
 
     LifecycleOwnerListener(
@@ -51,7 +53,7 @@ fun BoxingTimerRoute(
             timeTicking = timeTickingForText,
             currentRound = currentRound,
             whichRoundRunning = whichRoundRunning,
-            restTimes = dataVm.listOfRestTime,
+            warningTimes = dataVm.listOfWarningTimes,
             timerClassifications = dataVm.listOfTimerClassification,
             setRestTime = timerVm::setRestTime,
             setRoundTime = timerVm::setRoundTime,
@@ -60,7 +62,9 @@ fun BoxingTimerRoute(
             cancelAllTimer = timerVm::cancelAllTimer,
             startCounting = timerVm::startCounting,
             resetAllTimer = timerVm::resetAll,
-            adView = adsVm.bannerAdView
+            adView = adsVm.bannerAdView,
+            selectedWarningOption = selectedWarningOption,
+            onWarningOptionSelected = timerVm::setWarningOptions
         )
     } else {
         PortraitBoxingTimerScreen(
@@ -72,7 +76,7 @@ fun BoxingTimerRoute(
             timeTicking = timeTickingForText,
             currentRound = currentRound,
             whichRoundRunning = whichRoundRunning,
-            restTimes = dataVm.listOfRestTime,
+            warningTimes = dataVm.listOfWarningTimes,
             timerClassifications = dataVm.listOfTimerClassification,
             setRestTime = timerVm::setRestTime,
             setRoundTime = timerVm::setRoundTime,
@@ -81,7 +85,9 @@ fun BoxingTimerRoute(
             cancelAllTimer = timerVm::cancelAllTimer,
             startCounting = timerVm::startCounting,
             resetAllTimer = timerVm::resetAll,
-            adView = adsVm.bannerAdView
+            adView = adsVm.bannerAdView,
+            selectedWarningOption = selectedWarningOption,
+            onWarningOptionSelected = timerVm::setWarningOptions
         )
     }
 
@@ -93,12 +99,21 @@ private fun LifecycleOwnerListener(
     lifecycleOwner: LifecycleOwner,
     cancelAllTimer: () -> Unit
 ) {
+    val context = LocalContext.current
+    val activity = context.findActivity()
+
     DisposableEffect(lifecycleOwner) {
         // Create an observer that triggers our remembered callbacks
         // for sending analytics events
         val observer = LifecycleEventObserver { _, event ->
             if (event == Lifecycle.Event.ON_STOP) {
-                cancelAllTimer.invoke()
+                // Cek apakah stop ini karena rotasi layar / change configuration
+                val isRotating = activity?.isChangingConfigurations == true
+
+                // Jika TIDAK sedang rotasi, baru pause/cancel timer
+                if (!isRotating) {
+                    cancelAllTimer.invoke()
+                }
             }
         }
 
@@ -111,5 +126,6 @@ private fun LifecycleOwnerListener(
         }
     }
 }
+
 
 

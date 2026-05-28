@@ -10,10 +10,10 @@ import javax.inject.Inject
 class DataProviderViewModel @Inject constructor(resourceHelper: ResourceHelper) :
     ViewModel() {
 
-    val listOfRestTime = listOf(
-        RestTime(resourceHelper.provideString(resourceId = R.string.off), 0),
-        RestTime(resourceHelper.provideString(resourceId = R.string.ten_second), 10),
-        RestTime(resourceHelper.provideString(resourceId = R.string.thirty_sec), 30),
+    val listOfWarningTimes = listOf(
+        WarningTime(resourceHelper.provideString(resourceId = R.string.off), 0),
+        WarningTime(resourceHelper.provideString(resourceId = R.string.ten_second), 10),
+        WarningTime(resourceHelper.provideString(resourceId = R.string.thirty_sec), 30),
     )
 
     val listOfTimerClassification = listOf<TimerClassification>(
@@ -36,5 +36,4 @@ class DataProviderViewModel @Inject constructor(resourceHelper: ResourceHelper) 
                 .toList(),
         ),
     )
-
 }
