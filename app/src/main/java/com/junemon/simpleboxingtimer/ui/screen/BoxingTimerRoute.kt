@@ -13,6 +13,7 @@ import androidx.lifecycle.LifecycleEventObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.compose.LocalLifecycleOwner
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.junemon.simpleboxingtimer.util.findActivity
 import com.junemon.simpleboxingtimer.viewmodel.AdsViewModel
 import com.junemon.simpleboxingtimer.viewmodel.BoxingTimerViewModel
 import com.junemon.simpleboxingtimer.viewmodel.DataProviderViewModel
