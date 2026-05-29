@@ -1,5 +1,6 @@
 package com.junemon.simpleboxingtimer.ui.screen
 
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
@@ -7,9 +8,9 @@ import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.android.gms.ads.AdView
-import com.junemon.simpleboxingtimer.util.TimerConstant
-import com.junemon.simpleboxingtimer.model.WarningTime
 import com.junemon.simpleboxingtimer.model.TimerClassification
+import com.junemon.simpleboxingtimer.model.WarningTime
+import com.junemon.simpleboxingtimer.util.TimerConstant
 
 @Composable
 fun PortraitBoxingTimerScreen(
@@ -34,7 +35,9 @@ fun PortraitBoxingTimerScreen(
     resetAllTimer: () -> Unit,
     onWarningOptionSelected: (WarningTime) -> Unit,
 ) {
-    ConstraintLayout(modifier = modifier.verticalScroll(rememberScrollState())) {
+    ConstraintLayout(modifier = modifier
+        .fillMaxSize()
+        .verticalScroll(rememberScrollState())) {
         val (timerRef, selectingTimeAndRoundRef, warningButtonRef, intervalTimerButtonRef, bannerAddViewRef) = createRefs()
         val topGuideLine = createGuidelineFromTop(0.1f)
         val bottomGuideLine = createGuidelineFromBottom(0.2f)
@@ -115,7 +118,7 @@ fun PortraitBoxingTimerScreen(
         )
 
         AdsBannerScreen(adView, modifier = Modifier.constrainAs(bannerAddViewRef) {
-            top.linkTo(intervalTimerButtonRef.bottom)
+            bottom.linkTo(parent.bottom)
             start.linkTo(parent.start)
             end.linkTo(parent.end)
         })
