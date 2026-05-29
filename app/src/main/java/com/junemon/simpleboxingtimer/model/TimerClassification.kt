@@ -1,4 +1,4 @@
-package com.junemon.simpleboxingtimer.viewmodel
+package com.junemon.simpleboxingtimer.model
 
 data class TimerClassification(
     val id:Int,

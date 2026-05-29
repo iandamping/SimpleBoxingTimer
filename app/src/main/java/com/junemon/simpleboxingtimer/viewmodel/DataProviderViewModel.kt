@@ -2,6 +2,8 @@ package com.junemon.simpleboxingtimer.viewmodel
 
 import androidx.lifecycle.ViewModel
 import com.junemon.simpleboxingtimer.R
+import com.junemon.simpleboxingtimer.model.TimerClassification
+import com.junemon.simpleboxingtimer.model.WarningTime
 import com.junemon.simpleboxingtimer.util.resource.ResourceHelper
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject

@@ -8,8 +8,8 @@ import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.android.gms.ads.AdView
 import com.junemon.simpleboxingtimer.util.TimerConstant
-import com.junemon.simpleboxingtimer.viewmodel.WarningTime
-import com.junemon.simpleboxingtimer.viewmodel.TimerClassification
+import com.junemon.simpleboxingtimer.model.WarningTime
+import com.junemon.simpleboxingtimer.model.TimerClassification
 
 @Composable
 fun PortraitBoxingTimerScreen(

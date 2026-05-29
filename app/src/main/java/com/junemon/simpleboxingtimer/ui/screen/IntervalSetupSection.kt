@@ -19,7 +19,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import com.junemon.simpleboxingtimer.R
 import com.junemon.simpleboxingtimer.util.TimerConstant
-import com.junemon.simpleboxingtimer.viewmodel.TimerClassification
+import com.junemon.simpleboxingtimer.model.TimerClassification
 
 @Composable
 fun IntervalSetupSection(

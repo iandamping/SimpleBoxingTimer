@@ -1,5 +1,4 @@
-package com.junemon.simpleboxingtimer.viewmodel
-
+package com.junemon.simpleboxingtimer.model
 
 /**
  * Created by Ian Damping on 27,October,2021

@@ -1,4 +1,4 @@
-package com.junemon.simpleboxingtimer.ui.screen
+package com.junemon.simpleboxingtimer.util
 
 import androidx.compose.ui.graphics.Color
 
