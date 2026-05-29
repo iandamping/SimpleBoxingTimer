@@ -21,7 +21,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.junemon.simpleboxingtimer.R
 import com.junemon.simpleboxingtimer.util.TimerConstant
-import com.junemon.simpleboxingtimer.viewmodel.WarningTime
+import com.junemon.simpleboxingtimer.model.WarningTime
 
 @Composable
 fun WarningTimeRadioSection(

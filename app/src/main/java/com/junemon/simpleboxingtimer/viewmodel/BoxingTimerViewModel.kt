@@ -4,6 +4,7 @@ import android.text.format.DateUtils
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.junemon.simpleboxingtimer.R
+import com.junemon.simpleboxingtimer.model.WarningTime
 import com.junemon.simpleboxingtimer.util.TimerConstant
 import com.junemon.simpleboxingtimer.util.TimerConstant.DEFAULT_INTEGER_VALUE
 import com.junemon.simpleboxingtimer.util.TimerConstant.DEFAULT_LONG_VALUE

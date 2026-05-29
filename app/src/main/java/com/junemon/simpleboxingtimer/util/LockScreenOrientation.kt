@@ -6,7 +6,9 @@ import android.content.ContextWrapper
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.platform.LocalContext
-
+/*
+* LockScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+* */
 @Composable
 fun LockScreenOrientation(orientation: Int, context: Context = LocalContext.current) {
     DisposableEffect(Unit) {
