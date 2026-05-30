@@ -7,9 +7,9 @@ import androidx.compose.ui.Modifier
 import androidx.constraintlayout.compose.ConstraintLayout
 import androidx.constraintlayout.compose.Dimension
 import com.google.android.gms.ads.AdView
-import com.junemon.simpleboxingtimer.util.TimerConstant
-import com.junemon.simpleboxingtimer.model.WarningTime
 import com.junemon.simpleboxingtimer.model.TimerClassification
+import com.junemon.simpleboxingtimer.model.WarningTime
+import com.junemon.simpleboxingtimer.util.TimerConstant
 
 @Composable
 fun LandscapeBoxingTimerScreen(
@@ -38,8 +38,8 @@ fun LandscapeBoxingTimerScreen(
         val (timerRef, selectingTimeAndRoundRef, warningButtonRef, intervalTimerButtonRef, bannerAddViewRef) = createRefs()
         val topGuideLine = createGuidelineFromTop(0.1f)
         val bottomGuideLine = createGuidelineFromBottom(0.1f)
-        val startGuideLine = createGuidelineFromStart(0.1f)
-        val endGuideLine = createGuidelineFromEnd(0.1f)
+//        val startGuideLine = createGuidelineFromStart(0.1f)
+//        val endGuideLine = createGuidelineFromEnd(0.1f)
         val centerHorizontalGuideline = createGuidelineFromStart(0.5f)
         val centerVerticalGuideline = createGuidelineFromTop(0.5f)
 
@@ -48,7 +48,7 @@ fun LandscapeBoxingTimerScreen(
                 modifier = Modifier.constrainAs(timerRef) {
                     top.linkTo(topGuideLine)
                     bottom.linkTo(centerVerticalGuideline)
-                    start.linkTo(startGuideLine)
+                    start.linkTo(parent.start)
                     end.linkTo(centerHorizontalGuideline)
                     width = Dimension.wrapContent
                 },
@@ -63,7 +63,7 @@ fun LandscapeBoxingTimerScreen(
                     modifier = Modifier.constrainAs(timerRef) {
                         top.linkTo(topGuideLine)
                         bottom.linkTo(centerVerticalGuideline)
-                        start.linkTo(startGuideLine)
+                        start.linkTo(parent.start)
                         end.linkTo(centerHorizontalGuideline)
                         width = Dimension.wrapContent
                     }, isResting = isResting,
@@ -77,7 +77,7 @@ fun LandscapeBoxingTimerScreen(
                 ) {
                     top.linkTo(topGuideLine)
                     bottom.linkTo(centerVerticalGuideline)
-                    start.linkTo(startGuideLine)
+                    start.linkTo(parent.start)
                     end.linkTo(centerHorizontalGuideline)
                     width = Dimension.wrapContent
                 },
@@ -91,7 +91,7 @@ fun LandscapeBoxingTimerScreen(
         WarningTimeRadioSection(
             modifier = Modifier.constrainAs(warningButtonRef) {
                 start.linkTo(centerHorizontalGuideline)
-                end.linkTo(endGuideLine)
+                end.linkTo(parent.end)
                 bottom.linkTo(centerVerticalGuideline)
                 top.linkTo(topGuideLine)
                 width = Dimension.wrapContent
@@ -108,7 +108,7 @@ fun LandscapeBoxingTimerScreen(
             modifier = Modifier.constrainAs(intervalTimerButtonRef) {
                 top.linkTo(warningButtonRef.bottom)
                 start.linkTo(centerHorizontalGuideline)
-                end.linkTo(endGuideLine)
+                end.linkTo(parent.end)
                 width = Dimension.fillToConstraints
             },
             isTimerRunning = isTimerRunning,
