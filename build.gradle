@@ -18,6 +18,7 @@ buildscript {
         classpath "com.google.dagger:hilt-android-gradle-plugin:$hilt_version"
         classpath 'com.android.tools.build:gradle:8.9.1'
         classpath 'org.jetbrains.kotlin:compose-compiler-gradle-plugin:2.1.10'
+        classpath "org.jetbrains.kotlin:kotlin-serialization:$kotlin_version"
         // Check that you have the Google Services Gradle plugin v4.3.2 or later
         // (if not, add it).
         // NOTE: Do not place your application dependencies here; they belong
