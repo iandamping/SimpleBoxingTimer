@@ -14,4 +14,8 @@ class ResourceHelperImpl @Inject constructor(
     override fun provideArrayOfString(resourceId: Int): Array<String> {
         return context.resources.getStringArray(resourceId)
     }
+
+    override fun provideArrayOfInteger(resourceId: Int): IntArray {
+        return context.resources.getIntArray(resourceId)
+    }
 }
