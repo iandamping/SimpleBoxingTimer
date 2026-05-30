@@ -19,6 +19,11 @@
     <string name="rest">REST</string>
     <string name="round_time">Round Time</string>
 
+    <integer-array name="arr_warning_time">
+        <item>0</item>
+        <item>10</item>
+        <item>30</item>
+    </integer-array>
 
     <string-array name="arr_rest_time">
         <item>0 sec</item>

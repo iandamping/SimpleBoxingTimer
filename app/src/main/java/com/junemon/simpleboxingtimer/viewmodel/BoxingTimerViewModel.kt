@@ -199,6 +199,7 @@ class BoxingTimerViewModel @Inject constructor(
         _roundTimeValue.update { DEFAULT_INTEGER_VALUE }
     }
 
+    // passed data is using array position of arr_round_time
     private fun roundTimeMapper(data: Int?): Long {
         return if (data != null) {
             setCustomMinutes(data + 1)
@@ -207,6 +208,7 @@ class BoxingTimerViewModel @Inject constructor(
         }
     }
 
+    // passed data is using array position of arr_rest_time
     private fun restTimeMapper(data: Int?): Long {
         return if (data != null) {
             when (data) {
@@ -222,6 +224,14 @@ class BoxingTimerViewModel @Inject constructor(
         } else {
             TimerConstant.setCustomTime(0)
         }
+    }
+
+    // passed data is using array position of arr_rounds
+    fun setWhichRound(data: Int) {
+        if (data == 16) {
+            //set infinity
+            _whichRoundValue.update { Int.MAX_VALUE }
+        } else _whichRoundValue.update { data }
     }
 
     fun resetAll() {
@@ -282,12 +292,7 @@ class BoxingTimerViewModel @Inject constructor(
         setResting(false)
     }
 
-    fun setWhichRound(data: Int) {
-        if (data == 16) {
-            //set infinity
-            _whichRoundValue.update { Int.MAX_VALUE }
-        } else _whichRoundValue.update { data }
-    }
+
 
     fun setWarningOptions(time: WarningTime) {
         _selectedWarningOption.update { time }
