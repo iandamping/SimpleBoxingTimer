@@ -5,6 +5,7 @@ plugins {
     id 'dagger.hilt.android.plugin'
     id 'com.google.devtools.ksp'
     id 'org.jetbrains.kotlin.plugin.compose'
+    id 'org.jetbrains.kotlin.plugin.serialization'
 }
 
 android {
@@ -128,5 +129,12 @@ dependencies {
     //play core
     implementation "com.google.android.gms:play-services-ads:24.9.0"
     implementation "androidx.constraintlayout:constraintlayout-compose:1.1.1"
+    //navigation
+    implementation "androidx.navigation3:navigation3-ui:1.1.2"
+    implementation "androidx.navigation3:navigation3-runtime:1.1.2"
+    implementation "org.jetbrains.kotlinx:kotlinx-serialization-core:1.9.0"
+//    implementation "org.jetbrains.kotlin.plugin.serialization:2.2.21"
+//    implementation "androidx.compose.material3.adaptive:adaptive-navigation3:1.2.0"
+
 
 }
